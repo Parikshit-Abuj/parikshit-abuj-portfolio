@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { CustomEditor, LayoutEditor, PhotoEditor } from "./studio-settings";
 import {
   ArrowDown,
   ArrowUp,
@@ -230,13 +231,36 @@ export function Studio({
   const [revision, setRevision] = useState(initialDraft.revision),
     [savedAt, setSavedAt] = useState(initialDraft.updated_at);
   const [published, setPublished] = useState(initialPublished),
-    [active, setActive] = useState<"profile" | CollectionKey>("profile");
+    [active, setActive] = useState<
+      | "profile"
+      | CollectionKey
+      | "customSections"
+      | "resumeLayout"
+      | "websiteLayout"
+    >("profile");
   const [busy, setBusy] = useState<"save" | "publish" | "logout" | null>(null);
   const [message, setMessage] = useState<{
     kind: "success" | "error";
     text: string;
   } | null>(null);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
+  const [pdfInfo, setPdfInfo] = useState<{
+    pageCount: number;
+    revision: number;
+  } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    setPdfInfo(null);
+    fetch("/admin/resume?info=1")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((value) => {
+        if (!cancelled) setPdfInfo(value);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [revision]);
   const dirty = JSON.stringify(content) !== JSON.stringify(saved),
     hasUnpublished = revision !== published?.source_revision;
   useEffect(() => {
@@ -347,6 +371,17 @@ export function Studio({
       hour: "2-digit",
       minute: "2-digit",
     });
+  const extraLabels = {
+    customSections: "Custom sections",
+    resumeLayout: "Resume Layout",
+    websiteLayout: "Website Layout",
+  };
+  const activeLabel =
+    active === "profile"
+      ? "Profile & contact"
+      : active in extraLabels
+        ? extraLabels[active as keyof typeof extraLabels]
+        : collectionLabels[active as CollectionKey];
   return (
     <div className="studio">
       <header className="studio-header">
@@ -382,6 +417,17 @@ export function Studio({
       <div className="studio-layout">
         <aside className="studio-sidebar">
           <nav className="studio-nav" aria-label="Editor sections">
+            {(Object.keys(extraLabels) as (keyof typeof extraLabels)[]).map(
+              (key) => (
+                <button
+                  key={key}
+                  className={active === key ? "active" : ""}
+                  onClick={() => setActive(key)}
+                >
+                  {extraLabels[key]}
+                </button>
+              ),
+            )}
             <button
               className={active === "profile" ? "active" : ""}
               onClick={() => setActive("profile")}
@@ -412,10 +458,7 @@ export function Studio({
               : "Nothing published yet."}
           </div>
         </aside>
-        <section
-          className="editor-panel"
-          aria-label={`${active === "profile" ? "Profile" : collectionLabels[active]} editor`}
-        >
+        <section className="editor-panel" aria-label={`${activeLabel} editor`}>
           {message && (
             <div
               className={`message ${message.kind}`}
@@ -426,52 +469,76 @@ export function Studio({
           )}
           <div className="editor-heading">
             <div>
-              <h2>
-                {active === "profile"
-                  ? "Profile & contact"
-                  : collectionLabels[active]}
-              </h2>
+              <h2>{activeLabel}</h2>
               <p>
                 {active === "profile"
                   ? "Update your profession, summary, and the ways people can reach you."
                   : "Make it yours. Add, edit, reorder, or remove an entry."}
               </p>
             </div>
-            {active !== "profile" && (
-              <button
-                className="button small secondary"
-                disabled={Boolean(busy)}
-                onClick={() =>
-                  setContent((previous) => ({
-                    ...previous,
-                    [active]: [...previous[active], newEntry(active)],
-                  }))
-                }
-              >
-                <Plus size={15} />
-                Add entry
-              </button>
-            )}
+            {active !== "profile" &&
+              active !== "customSections" &&
+              active !== "resumeLayout" &&
+              active !== "websiteLayout" && (
+                <button
+                  className="button small secondary"
+                  disabled={Boolean(busy)}
+                  onClick={() =>
+                    setContent((previous) => ({
+                      ...previous,
+                      [active]: [...previous[active], newEntry(active)],
+                    }))
+                  }
+                >
+                  <Plus size={15} />
+                  Add entry
+                </button>
+              )}
           </div>
           <fieldset disabled={Boolean(busy)} className="editor-fieldset">
             {active === "profile" ? (
-              <div className="field-grid">
-                {profileFields.map((spec) => (
-                  <EditorField
-                    key={spec.key}
-                    spec={spec}
-                    value={
-                      content.profile[spec.key as keyof typeof content.profile]
-                    }
-                    onChange={(value) =>
-                      setContent((previous) => ({
-                        ...previous,
-                        profile: { ...previous.profile, [spec.key]: value },
-                      }))
-                    }
-                  />
-                ))}
+              <div>
+                <div className="field-grid">
+                  {profileFields.map((spec) => (
+                    <EditorField
+                      key={spec.key}
+                      spec={spec}
+                      value={
+                        content.profile[
+                          spec.key as keyof typeof content.profile
+                        ]
+                      }
+                      onChange={(value) =>
+                        setContent((previous) => ({
+                          ...previous,
+                          profile: { ...previous.profile, [spec.key]: value },
+                        }))
+                      }
+                    />
+                  ))}
+                </div>
+                <PhotoEditor content={content} setContent={setContent} />
               </div>
+            ) : active === "resumeLayout" || active === "websiteLayout" ? (
+              <LayoutEditor
+                content={content}
+                setContent={setContent}
+                channel={active === "resumeLayout" ? "resume" : "website"}
+              />
+            ) : active === "customSections" ? (
+              <CustomEditor
+                content={content}
+                setContent={setContent}
+                confirmDelete={(title, action) =>
+                  setConfirmation({
+                    title: "Delete from draft?",
+                    body: `“${title}” will be removed. Save and publish to update the public version.`,
+                    label: "Delete",
+                    danger: true,
+                    confirm: action,
+                  })
+                }
+              />
             ) : (
               <div className="editor-list">
                 {content[active].length === 0 && (
@@ -634,6 +701,8 @@ export function Studio({
           </strong>
           <span>
             Draft saved {date(savedAt)} · revision {revision}
+            {pdfInfo?.revision === revision &&
+              ` · PDF: ${pdfInfo.pageCount} ${pdfInfo.pageCount === 1 ? "page" : "pages"}${dirty ? " (saved draft)" : ""}`}
           </span>
         </div>
         <div className="save-actions">

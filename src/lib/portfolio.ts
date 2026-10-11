@@ -20,6 +20,33 @@ const year = text(4).refine(
 );
 const item = { id: z.string().uuid(), visible: z.boolean() };
 const bullets = z.array(required(1200)).max(30);
+export const resumeDefaults = [
+  "summary",
+  "education",
+  "skillGroups",
+  "experiences",
+  "projects",
+  "certifications",
+  "languages",
+];
+export const websiteDefaults = [
+  "projects",
+  "experiences",
+  "skillGroups",
+  "credentials",
+];
+const order = z.object({
+  sectionOrder: z.array(required(100)).max(40).default([]),
+});
+const customEntrySchema = z.object({
+  ...item,
+  title: required(200),
+  organization: text(200),
+  date: text(100),
+  description: text(3000),
+  bullets,
+  url: link,
+});
 
 export const portfolioSchema = z.object({
   schemaVersion: z.literal(1),
@@ -33,7 +60,36 @@ export const portfolioSchema = z.object({
     availability: text(100),
     github: link,
     linkedin: link,
+    photoPath: z
+      .string()
+      .regex(/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.webp$/i)
+      .optional(),
   }),
+  resume: order.optional(),
+  website: order.optional(),
+  customSections: z
+    .array(
+      z.object({
+        ...item,
+        title: required(100),
+        showOnWebsite: z.boolean(),
+        showOnResume: z.boolean(),
+        entries: z
+          .array(customEntrySchema)
+          .max(100)
+          .refine(
+            (entries) =>
+              new Set(entries.map((e) => e.id)).size === entries.length,
+            "Entry IDs must be unique within a section.",
+          ),
+      }),
+    )
+    .max(20)
+    .refine(
+      (sections) => new Set(sections.map((s) => s.id)).size === sections.length,
+      "Section IDs must be unique.",
+    )
+    .optional(),
   skillGroups: z
     .array(
       z.object({
@@ -118,10 +174,46 @@ export const portfolioSchema = z.object({
 });
 
 export type PortfolioContent = z.infer<typeof portfolioSchema>;
-export type CollectionKey = Exclude<
-  keyof PortfolioContent,
-  "profile" | "schemaVersion"
->;
+export type CollectionKey =
+  | "projects"
+  | "experiences"
+  | "skillGroups"
+  | "education"
+  | "certifications"
+  | "languages";
+export type CustomSection = NonNullable<
+  PortfolioContent["customSections"]
+>[number];
+export function sectionOrder(
+  content: PortfolioContent,
+  channel: "resume" | "website",
+) {
+  const defaults = channel === "resume" ? resumeDefaults : websiteDefaults;
+  const custom = (content.customSections ?? []).map(
+    (section) => `custom:${section.id}`,
+  );
+  const valid = [...defaults, ...custom];
+  const fallback =
+    channel === "resume"
+      ? [...defaults.slice(0, -1), ...custom, "languages"]
+      : valid;
+  const requested = content[channel]?.sectionOrder ?? [];
+  return [
+    ...new Set([...requested.filter((id) => valid.includes(id)), ...fallback]),
+  ];
+}
+export function newCustomEntry(): CustomSection["entries"][number] {
+  return {
+    id: crypto.randomUUID(),
+    visible: true,
+    title: "",
+    organization: "",
+    date: "",
+    description: "",
+    bullets: [],
+    url: "",
+  };
+}
 export type PortfolioSnapshot = {
   content: PortfolioContent;
   source_revision: number;
@@ -186,8 +278,30 @@ export function newEntry(key: CollectionKey) {
 }
 
 export function publicContent(content: PortfolioContent): PortfolioContent {
+  const customSections = (content.customSections ?? [])
+    .filter(
+      (section) =>
+        section.visible && (section.showOnWebsite || section.showOnResume),
+    )
+    .map((section) => ({
+      ...section,
+      entries: section.entries.filter((entry) => entry.visible),
+    }));
+  const cleanOrder = (channel: "resume" | "website") =>
+    content[channel]
+      ? {
+          sectionOrder: content[channel]!.sectionOrder.filter(
+            (id) =>
+              !id.startsWith("custom:") ||
+              customSections.some((s) => `custom:${s.id}` === id),
+          ),
+        }
+      : undefined;
   return {
     ...content,
+    customSections,
+    resume: cleanOrder("resume"),
+    website: cleanOrder("website"),
     ...Object.fromEntries(
       Object.keys(collectionLabels).map((key) => [
         key,

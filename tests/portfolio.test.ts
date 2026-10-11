@@ -80,3 +80,58 @@ describe("portfolio content contract", () => {
       expect(newEntry(key).id).not.toBe(newEntry(key).id);
   });
 });
+
+it("filters nested custom privacy and normalizes independent layout orders", () => {
+  const content = structuredClone(fixture);
+  const entry = {
+    id: crypto.randomUUID(),
+    visible: true,
+    title: "Award",
+    organization: "",
+    date: "2026",
+    description: "",
+    bullets: [],
+    url: "",
+  };
+  content.customSections = [
+    {
+      id: crypto.randomUUID(),
+      visible: true,
+      title: "Achievements",
+      showOnWebsite: false,
+      showOnResume: true,
+      entries: [
+        entry,
+        {
+          ...entry,
+          id: crypto.randomUUID(),
+          visible: false,
+          title: "Hidden entry",
+        },
+      ],
+    },
+    {
+      id: crypto.randomUUID(),
+      visible: false,
+      title: "Hidden section",
+      showOnWebsite: true,
+      showOnResume: true,
+      entries: [entry],
+    },
+  ];
+  content.resume = {
+    sectionOrder: [
+      `custom:${content.customSections[1].id}`,
+      "projects",
+      "projects",
+      "unknown",
+    ],
+  };
+  const projected = publicContent(content);
+  expect(projected.customSections).toHaveLength(1);
+  expect(projected.customSections![0].entries).toHaveLength(1);
+  expect(JSON.stringify(projected)).not.toContain("Hidden");
+  expect(projected.resume!.sectionOrder).not.toContain(
+    `custom:${content.customSections[1].id}`,
+  );
+});

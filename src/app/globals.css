@@ -1530,3 +1530,337 @@ dialog.modal {
 dialog.modal::backdrop {
   background: #0a192875;
 }
+/* Recruiter-facing design: content first, black text, restrained borders. */
+:root {
+  --ink: #000;
+  --muted: #000;
+  --navy: #000;
+  --paper: #fff;
+  --line: #dedede;
+  --wash: #f7f7f7;
+  --accent: #000;
+}
+body {
+  font-size: 16px;
+}
+h1,
+h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.recruiter-site {
+  background: #fff;
+  color: #000;
+  overflow-wrap: anywhere;
+}
+.recruiter-site .container {
+  max-width: 1120px;
+  width: calc(100% - 64px);
+  margin-inline: auto;
+}
+.recruiter-header {
+  border-bottom: 1px solid #dedede;
+  background: #fff;
+}
+.recruiter-header > .container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 88px;
+  position: relative;
+}
+.recruiter-brand {
+  font-weight: 700;
+  margin-right: auto;
+  font-size: 18px;
+}
+.recruiter-menu summary {
+  cursor: pointer;
+  padding: 10px;
+  min-height: 44px;
+}
+.recruiter-menu nav {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  background: white;
+  border: 1px solid #dedede;
+  padding: 12px;
+  max-width: 300px;
+  box-shadow: 0 8px 25px #0001;
+}
+.recruiter-menu nav a {
+  display: block;
+  padding: 10px;
+  min-height: 44px;
+}
+.recruiter-hero {
+  display: grid;
+  grid-template-columns: 1fr 160px;
+  gap: 64px;
+  align-items: start;
+  padding-block: 56px 40px;
+}
+.recruiter-hero.no-portrait {
+  grid-template-columns: 1fr;
+}
+.recruiter-hero h1 {
+  font-size: 44px;
+  margin: 10px 0;
+  line-height: 1.15;
+}
+.recruiter-role {
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.recruiter-intro {
+  margin-top: 16px;
+  max-width: 800px;
+}
+.recruiter-hero .hero-actions {
+  margin-top: 24px;
+}
+.recruiter-hero .hero-socials {
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.recruiter-portrait {
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 32%;
+  margin-top: 18px;
+  border: 1px solid #dedede;
+}
+.recruiter-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding-block: 14px;
+  border-block: 1px solid #dedede;
+}
+.recruiter-section-nav a {
+  padding-block: 8px;
+  min-height: 44px;
+}
+.recruiter-section {
+  padding-block: 48px;
+  border-bottom: 1px solid #dedede;
+  scroll-margin-top: 20px;
+}
+.recruiter-section h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+.recruiter-section h3 {
+  font-size: 18px;
+}
+.recruiter-projects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.recruiter-card {
+  border: 1px solid #dedede;
+  border-radius: 10px;
+  padding: 26px;
+}
+.recruiter-card p {
+  margin-top: 12px;
+}
+.recruiter-card details {
+  margin-top: 14px;
+}
+.recruiter-card summary {
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+  min-height: 44px;
+  padding-block: 8px;
+}
+.recruiter-card .tags {
+  margin-top: 18px;
+}
+.recruiter-site .tags span {
+  color: #000;
+  background: #f6f6f6;
+  border: 1px solid #e0e0e0;
+  font-size: 13px;
+}
+.recruiter-site .badge {
+  color: #000;
+  background: #f6f6f6;
+}
+.recruiter-site .project-title-row {
+  align-items: start;
+  flex-wrap: wrap;
+}
+.recruiter-site .project-links {
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 20px;
+  color: #000;
+}
+.recruiter-site .project-links a,
+.recruiter-site .hero-socials a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.recruiter-entry {
+  padding-block: 0 22px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #eee;
+}
+.recruiter-entry:last-child {
+  border: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.recruiter-entry p {
+  margin-top: 4px;
+}
+.recruiter-site ul {
+  padding-left: 22px;
+  margin-top: 12px;
+}
+.recruiter-site li {
+  margin-top: 6px;
+}
+.recruiter-skills {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+.recruiter-skills .tags {
+  margin-top: 10px;
+}
+.recruiter-credentials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+.recruiter-contact > a {
+  display: block;
+  text-decoration: underline;
+  padding-top: 10px;
+  min-height: 44px;
+}
+.recruiter-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding-block: 24px;
+  font-size: 14px;
+}
+.layout-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #dedede;
+}
+.layout-row .entry-tools {
+  display: flex;
+}
+.layout-row .icon-button,
+.entry-tools .icon-button {
+  width: 44px;
+  height: 44px;
+}
+.custom-section {
+  border: 1px solid #dedede;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.photo-editor {
+  margin-top: 28px;
+  border-top: 1px solid #dedede;
+  padding-top: 24px;
+}
+.photo-editor img {
+  width: 104px;
+  height: 104px;
+  object-fit: cover;
+  object-position: 50% 32%;
+  border-radius: 50%;
+  margin: 16px 0;
+}
+.photo-editor input {
+  max-width: 100%;
+}
+@media (max-width: 700px) {
+  .recruiter-site .container {
+    width: calc(100% - 40px);
+  }
+  .recruiter-header > .container {
+    gap: 8px;
+    min-height: 76px;
+    flex-wrap: wrap;
+  }
+  .recruiter-brand {
+    font-size: 16px;
+    max-width: 45%;
+  }
+  .recruiter-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-block: 32px;
+  }
+  .recruiter-hero h1 {
+    font-size: 32px;
+  }
+  .recruiter-role {
+    font-size: 18px;
+  }
+  .recruiter-portrait {
+    width: 104px;
+    height: 104px;
+    grid-row: 1;
+    margin: 0;
+  }
+  .recruiter-projects,
+  .recruiter-skills,
+  .recruiter-credentials {
+    grid-template-columns: 1fr;
+  }
+  .recruiter-card {
+    padding: 20px;
+  }
+  .recruiter-section {
+    padding-block: 32px;
+  }
+  .recruiter-section h2 {
+    font-size: 24px;
+  }
+  .recruiter-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .recruiter-menu nav {
+    top: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition: none !important;
+  }
+}
+.recruiter-hero:not(:has(.recruiter-portrait)) {
+  grid-template-columns: 1fr;
+}
+.recruiter-header .button,
+.recruiter-brand,
+.recruiter-footer a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

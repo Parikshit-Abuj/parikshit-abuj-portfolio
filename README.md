@@ -52,3 +52,15 @@ Unit/database checks do not prove a hosted Supabase login or browser publishing 
 After approval, connect this GitHub repository to Vercel and configure the three environment variables for the production origin. Update Supabase's Site URL and allowed recovery callback to the approved domain. Review authentication email delivery and confirm the database migration, owner assignment, and RLS settings in the intended production project. Do not upload `.env.local`, `.local/`, passwords, private drafts, or the source resume to GitHub.
 
 Password-recovery verification was explicitly deferred by the owner after the hosted email quota was reached. The flow remains implemented, with callback and failure-path checks, but a successful password reset is not claimed. See [verification evidence](docs/verification.md). No demo URL or purchased domain is claimed before it exists.
+
+## Resume layout, custom sections, and portrait
+
+The resume is a selectable-text A4 PDF with black text, 11 pt body type, standard headings, and natural pagination. Education includes every visible record, including Class X and XII. No photograph is included in the PDF. Formatting supports common parsing requirements; it does not promise an ATS score or universal parser acceptance.
+
+In the owner studio, use **Resume Layout** or **Website Layout** to move sections independently. Identity and contact remain fixed. Restore default order is available. The saved draft PDF page count appears beside the revision.
+
+Use **Custom sections** to create Achievements, Awards, Volunteering, or other categories. Add entries with a title and optional organization, date, description, bullets, and link. Move entries, rename sections, and choose website/resume placement independently. Globally hidden entries remain private; resume-only entries are public through the downloadable PDF. Save, preview, and publish to synchronize both outputs.
+
+Apply migrations `202610110003_custom_sections.sql` and `202610110004_profile_media.sql` before using these features against an existing Supabase project. They preserve existing content and revision conflict behavior. The second creates the private `portfolio-media` bucket: owner-only inserts/reads, and anonymous download permission exclusively for the current published portrait. Anonymous bucket listing is denied. No service-role key is used.
+
+Portrait uploads accept JPEG/PNG/WebP up to 3 MB and 12 megapixels. Images are decoded, oriented, metadata-stripped, resized up to 640 px, and encoded to WebP. Replacing/removing a draft portrait changes the public image only after publication. Immutable old files remain private when no longer referenced. Original photographs and generated review artifacts are excluded from Git.

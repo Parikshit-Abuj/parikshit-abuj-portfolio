@@ -118,3 +118,31 @@ test("public resume uses the published revision and is absent before first publi
     );
   }
 });
+
+test("portrait endpoints reject anonymous writes and external upload origins", async ({
+  request,
+}) => {
+  const origin = new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
+  ).origin;
+  const foreign = await request.post("/admin/profile-photo", {
+    headers: { Origin: "https://example.com" },
+    data: "",
+  });
+  expect(foreign.status()).toBe(403);
+  const anonymous = await request.post("/admin/profile-photo", {
+    headers: { Origin: origin },
+    data: "",
+  });
+  expect(anonymous.status()).toBe(403);
+  const draft = await request.get("/admin/profile-photo");
+  expect(draft.status()).toBe(403);
+  const publicImage = await request.get(
+    "/api/profile-photo?path=unrelated-private-file.webp",
+  );
+  expect([200, 404]).toContain(publicImage.status());
+  if (publicImage.status() === 200) {
+    expect(publicImage.headers()["content-type"]).toBe("image/webp");
+    expect(publicImage.headers()["cache-control"]).toBe("no-store");
+  }
+});

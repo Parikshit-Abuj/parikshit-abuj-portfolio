@@ -20,6 +20,16 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 - Recovery request failures now distinguish email quota exhaustion, request throttling, and unauthorized recipients. The owner's browser screenshot confirms the email sending limit was reached: the application displayed the message mapped specifically from `over_email_send_rate_limit`.
 - After the owner signed in again, the portfolio project's status was changed to Completed and its description updated to describe the implemented CRUD, draft publishing, and synchronized PDF features. The owner dashboard confirmed publication of revision 5. The public website displayed the final entry, and the downloaded two-page A4 resume contained the same completed status and description. Both pages were rendered and visually reviewed. All nine HTTP checks passed again against this published snapshot.
 
+## Resume and recruiter-view update
+
+- The latest type check, production build, formatting check, 23 unit/database/component/PDF tests, and 10 HTTP checks passed.
+- Revision 7 was saved and published through the owner studio. The anonymous PDF and portrait endpoints returned that revision, and the website displayed the updated portfolio project entry.
+- The exported resume has two A4 pages with black text, readable 11 pt body type, all three education records, and selectable text. Both pages were rendered and visually reviewed. Extraction tests cover section ordering, custom content, hidden content, heading pagination, and long skills lists.
+- Custom section and entry CRUD, visibility, independent ordering, and portrait replacement/removal/reset are covered by component tests. Database tests execute the actual migrations and check nested privacy filtering, revision conflicts, and portrait access policies.
+- The supplied portrait was uploaded through the owner editor. Anonymous download of the currently published image succeeded; anonymous bucket listing returned no objects. The encoded image is a metadata-stripped 610 by 640 WebP.
+- Desktop and mobile layouts were reviewed. Keyboard disclosure, menu Escape handling, and menu closure after contact navigation were checked. Earlier responsive checks covered 360, 390, 768, 1366, and 1920 pixels. A later attempt to apply 320 pixels did not change the browser's reported viewport, so 320-pixel reflow and actual 200% browser zoom are not claimed as verified.
+- The final public preview screenshot and exported PDF are saved in ignored output directories. The original resume and portrait remain outside the repository.
+
 ## Deferred by the owner
 
 - On 11 October 2026, the owner explicitly asked to skip password-recovery verification and continue implementation. Recovery-email delivery and quota-error handling are confirmed; successful reset and subsequent sign-in remain unverified. Recovery must start and finish in the same browser. Password entry and submission stay with the owner.

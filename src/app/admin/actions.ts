@@ -18,6 +18,14 @@ function message(error: unknown) {
 }
 function normalize(content: unknown) {
   const copy = structuredClone(content) as PortfolioContent;
+  if (Array.isArray(copy?.customSections))
+    for (const section of copy.customSections)
+      if (Array.isArray(section.entries))
+        for (const entry of section.entries)
+          if (Array.isArray(entry.bullets))
+            entry.bullets = entry.bullets.filter(
+              (value) => typeof value !== "string" || value.trim().length > 0,
+            );
   if (copy && typeof copy === "object")
     for (const key of ["projects", "experiences", "skillGroups"] as const) {
       if (Array.isArray(copy[key]))
@@ -52,6 +60,16 @@ export async function saveDraftAction(
     const parsed = portfolioSchema.safeParse(normalize(content));
     if (!parsed.success)
       return { ok: false, error: friendlyValidation(parsed.error) };
+    if (parsed.data.profile.photoPath) {
+      const claims = await supabase.auth.getClaims();
+      if (
+        !parsed.data.profile.photoPath.startsWith(`${claims.data?.claims.sub}/`)
+      )
+        return {
+          ok: false,
+          error: "The portrait must belong to your account.",
+        };
+    }
     const { data, error } = await supabase.rpc("save_portfolio_draft", {
       new_content: parsed.data,
       expected_revision: revision,
