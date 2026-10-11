@@ -1,11 +1,22 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 export function NavigationMenu({
   sections,
 }: {
   sections: { id: string; title: string }[];
 }) {
   const menu = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    function closeOutside(event: PointerEvent) {
+      const current = menu.current;
+      if (current?.open && !event.composedPath().includes(current)) {
+        current.open = false;
+      }
+    }
+    document.addEventListener("pointerdown", closeOutside, true);
+    return () =>
+      document.removeEventListener("pointerdown", closeOutside, true);
+  }, []);
   return (
     <details
       className="recruiter-menu"
