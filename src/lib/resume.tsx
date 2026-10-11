@@ -12,5 +12,5 @@ export function resumeFileName(content: PortfolioContent, draft = false) {
       .join("_")
       .replace(/[^a-zA-Z0-9_-]/g, "")
       .slice(0, 80) || "Portfolio";
-  return `${name}_Resume_A4${draft ? "_Draft" : ""}.pdf`;
+  return `${name}_Resume${draft ? "_Draft" : ""}.pdf`;
 }
