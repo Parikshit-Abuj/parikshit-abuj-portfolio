@@ -20,7 +20,7 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 
 ## Remaining before final handoff
 
-- The owner received a recovery email, but its callback failed before password entry. After the callback fix, the owner must request a fresh link and verify password reset and subsequent sign-in in the same browser. Password entry and submission stay with the owner.
+- Recovery-email delivery is confirmed. After the callback-origin fix, a missing-verifier error was traced to starting recovery in the Codex browser and opening the email in Chrome, which have separate cookie stores. The owner must request a fresh link in Chrome and finish it in Chrome to verify password reset and subsequent sign-in. Password entry and submission stay with the owner.
 - Finalize the portfolio project's status and description after the remaining owner flow is verified; it currently says In progress.
 
 ## Deployment gate
