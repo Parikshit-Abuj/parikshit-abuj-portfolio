@@ -1,45 +1,470 @@
-import { ArrowDown, ArrowRight, ArrowUpRight, Code2, Download, Code2 as Github, BriefcaseBusiness as Linkedin, Mail, MapPin } from "lucide-react";
-import { educationPeriod, experiencePeriod, initials, publicContent, type PortfolioContent } from "@/lib/portfolio";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUpRight,
+  Code2,
+  Download,
+  Code2 as Github,
+  BriefcaseBusiness as Linkedin,
+  Mail,
+  MapPin,
+} from "lucide-react";
+import {
+  educationPeriod,
+  experiencePeriod,
+  initials,
+  publicContent,
+  type PortfolioContent,
+} from "@/lib/portfolio";
 
-function SectionHeading({ number, label, title, note }: { number: string; label: string; title: string; note?: string }) {
-  return <div className="section-heading"><div><span className="eyebrow"><span className="section-number">{number}</span>{label}</span><h2>{title}</h2></div>{note && <p>{note}</p>}</div>;
+function SectionHeading({
+  number,
+  label,
+  title,
+  note,
+}: {
+  number: string;
+  label: string;
+  title: string;
+  note?: string;
+}) {
+  return (
+    <div className="section-heading">
+      <div>
+        <span className="eyebrow">
+          <span className="section-number">{number}</span>
+          {label}
+        </span>
+        <h2>{title}</h2>
+      </div>
+      {note && <p>{note}</p>}
+    </div>
+  );
 }
 
-export function PortfolioView({ content, preview = false }: { content: PortfolioContent; preview?: boolean }) {
+export function PortfolioView({
+  content,
+  preview = false,
+}: {
+  content: PortfolioContent;
+  preview?: boolean;
+}) {
   const data = publicContent(content);
-  const { profile, projects, experiences, skillGroups, education, certifications, languages } = data;
+  const {
+    profile,
+    projects,
+    experiences,
+    skillGroups,
+    education,
+    certifications,
+    languages,
+  } = data;
   const resumeUrl = preview ? "/admin/resume" : "/api/resume";
   const shortName = `${profile.name.split(" ")[0]} ${profile.name.split(" ").at(-1)}`;
-  const sections = [projects.length && ["work", "Work"], experiences.length && ["experience", "Experience"], skillGroups.length && ["skills", "Skills"]].filter(Boolean) as string[][];
-  return <>
-    <a className="skip-link" href="#main">Skip to content</a>
-    {preview && <div className="preview-banner"><span>PRIVATE PREVIEW · Saved draft</span><a href="/admin">Return to editor <ArrowRight size={14} /></a></div>}
-    <header className="site-header"><div className="container header-inner">
-      <a href={preview ? "/admin/preview" : "/"} className="brand" aria-label={`${profile.name}, home`}><span className="monogram">{initials(profile.name)}<span>.</span></span><span>{shortName}</span></a>
-      <nav aria-label="Main navigation">{sections.map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}<a href="#contact">Contact</a></nav>
-      <a className="button small header-resume" href={resumeUrl}><Download size={15} />Resume</a>
-    </div></header>
-    <main id="main">
-      <section className="hero container">
-        <div className="hero-content"><span className="eyebrow"><span className="status-dot" />{profile.availability || "A little about me"}</span>
-          <h1>{profile.title}<span className="hero-period">.</span></h1>
-          <p className="hero-summary">{profile.summary}</p>
-          <div className="hero-actions"><a className="button primary" href={resumeUrl}><Download size={17} />Download resume</a><a className="button secondary" href={projects.length ? "#work" : "#contact"}>{projects.length ? "Explore my work" : "Get in touch"}<ArrowDown size={17} /></a></div>
-          <div className="hero-socials">{profile.github && <a href={profile.github} target="_blank" rel="noopener noreferrer"><Github size={17} />GitHub<ArrowUpRight size={13} /></a>}{profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin size={17} />LinkedIn<ArrowUpRight size={13} /></a>}<a href={`mailto:${profile.email}`}><Mail size={17} />Email me<ArrowUpRight size={13} /></a></div>
+  const sections = [
+    projects.length && ["work", "Work"],
+    experiences.length && ["experience", "Experience"],
+    skillGroups.length && ["skills", "Skills"],
+  ].filter(Boolean) as string[][];
+  return (
+    <>
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      {preview && (
+        <div className="preview-banner">
+          <span>PRIVATE PREVIEW · Saved draft</span>
+          <a href="/admin">
+            Return to editor <ArrowRight size={14} />
+          </a>
         </div>
-        <div className="hero-card" aria-label="Portfolio overview"><div className="card-topline"><span>PROFILE / {new Date().getUTCFullYear()}</span><Code2 size={18} /></div><div className="hero-initials">{initials(profile.name)}<span>.</span></div><div className="card-name">{profile.name}</div><div className="card-role">{profile.title}</div><div className="card-rule" /><div className="card-bottom"><span>Projects, experience,<br />and the work behind them.</span><ArrowUpRight size={25} /></div><div className="orb orb-one" /><div className="orb orb-two" /></div>
-      </section>
-      <div className="intro-strip"><div className="container strip-inner"><span>Curiosity. Craft. Continuous learning.</span><a href="#contact">Let’s connect <ArrowUpRight size={16} /></a></div></div>
-      {projects.length > 0 && <section id="work" className="section container"><SectionHeading number="01" label="Selected work" title="From idea to implementation." note="A closer look at the applications I’ve worked on." /><div className="project-grid">
-        {projects.map((project, index) => <article className={`project-card ${project.featured ? "featured" : ""}`} key={project.id}>
-          <div className="project-visual"><span className="project-index">PROJECT {String(index + 1).padStart(2, "0")}</span><div className="project-symbol"><Code2 size={project.featured ? 64 : 44} strokeWidth={1} /></div><span className="visual-label">{project.featured ? "Featured project" : project.status || "Project spotlight"}</span><span className="visual-arrow"><ArrowUpRight size={24} /></span></div>
-          <div className="project-body"><div className="project-title-row"><h3>{project.name}</h3>{project.status && <span className={`badge ${project.status === "In progress" ? "in-progress" : ""}`}>{project.status}</span>}</div><p>{project.summary}</p>{project.bullets.length > 0 && <ul className="project-bullets">{project.bullets.map((bullet, i) => <li key={i}>{bullet}</li>)}</ul>}<div className="tags">{project.technologies.map((tech, i) => <span key={`${tech}-${i}`}>{tech}</span>)}</div><div className="project-links">{project.demoUrl && <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">Live demo <ArrowUpRight size={15} /></a>}{project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"><Github size={15} />Source / GitHub <ArrowUpRight size={15} /></a>}</div></div>
-        </article>)}
-      </div></section>}
-      {experiences.length > 0 && <section id="experience" className="section section-tinted"><div className="container experience-layout"><SectionHeading number="02" label="Experience" title="Learning through doing." /><div className="experience-list">{experiences.map((entry) => <article className="experience-item" key={entry.id}><div className="experience-meta"><span className="timeline-dot" /><span>{experiencePeriod(entry)}</span>{entry.location && <span>{entry.location}</span>}</div><h3>{entry.role}</h3><div className="company">{entry.company}</div>{entry.bullets.length > 0 && <ul>{entry.bullets.map((bullet, i) => <li key={i}>{bullet}</li>)}</ul>}</article>)}</div></div></section>}
-      {skillGroups.length > 0 && <section id="skills" className="section container"><SectionHeading number="03" label="Toolkit" title="The tools behind the work." note="Skills and technologies I bring to a project." /><div className="skill-grid">{skillGroups.map((group, index) => <article className="skill-card" key={group.id}><span className="skill-number">{String(index + 1).padStart(2, "0")}</span><h3>{group.name}</h3><div className="tags">{group.skills.map((skill, i) => <span key={`${skill}-${i}`}>{skill}</span>)}</div></article>)}</div></section>}
-      {(education.length > 0 || certifications.length > 0 || languages.length > 0) && <section className="section credentials-section"><div className="container credentials-grid">{education.length > 0 && <div><span className="eyebrow">04 / Education</span><h2>A foundation to build on.</h2><div className="education-list">{education.map((entry) => <article key={entry.id}><span>{educationPeriod(entry)}</span><h3>{entry.qualification}</h3><p>{entry.institution}</p></article>)}</div></div>}<div className="credentials-aside">{certifications.length > 0 && <div><span className="eyebrow">Certifications</span><div className="certification-list">{certifications.map((entry) => <article key={entry.id}><span className="cert-icon">↗</span><div><h3>{entry.url ? <a href={entry.url} target="_blank" rel="noopener noreferrer">{entry.name}<ArrowUpRight size={14} /></a> : entry.name}</h3><p>{[entry.issuer, entry.year].filter(Boolean).join(" · ")}</p></div></article>)}</div></div>}{languages.length > 0 && <div className="language-block"><span className="eyebrow">Languages</span><div className="tags">{languages.map((entry) => <span key={entry.id}>{entry.name}</span>)}</div></div>}</div></div></section>}
-      <section id="contact" className="contact-section"><div className="container contact-inner"><div><span className="eyebrow">Let’s connect</span><h2>Have something<br />in mind<span>?</span></h2><p>I’d be happy to hear from you.</p>{profile.location && <span className="contact-location"><MapPin size={15} />{profile.location}</span>}</div><div className="contact-links"><a className="contact-email" href={`mailto:${profile.email}`}>{profile.email}<ArrowUpRight size={28} /></a>{profile.phone && <a className="contact-phone" href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}>{profile.phone}</a>}<div className="contact-socials">{profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <ArrowUpRight size={15} /></a>}{profile.github && <a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={15} /></a>}<a href={resumeUrl}>Download resume <Download size={15} /></a></div></div></div></section>
-    </main><footer className="container site-footer"><span>© {new Date().getUTCFullYear()} {shortName}</span><span>Built with care. Always evolving.</span><a href="#main">Back to top ↑</a></footer>
-  </>;
+      )}
+      <header className="site-header">
+        <div className="container header-inner">
+          <a
+            href={preview ? "/admin/preview" : "/"}
+            className="brand"
+            aria-label={`${profile.name}, home`}
+          >
+            <span className="monogram">
+              {initials(profile.name)}
+              <span>.</span>
+            </span>
+            <span>{shortName}</span>
+          </a>
+          <nav aria-label="Main navigation">
+            {sections.map(([id, label]) => (
+              <a key={id} href={`#${id}`}>
+                {label}
+              </a>
+            ))}
+            <a href="#contact">Contact</a>
+          </nav>
+          <a className="button small header-resume" href={resumeUrl}>
+            <Download size={15} />
+            Resume
+          </a>
+        </div>
+      </header>
+      <main id="main">
+        <section className="hero container">
+          <div className="hero-content">
+            <span className="eyebrow">
+              <span className="status-dot" />
+              {profile.availability || "A little about me"}
+            </span>
+            <h1>
+              {profile.title}
+              <span className="hero-period">.</span>
+            </h1>
+            <p className="hero-summary">{profile.summary}</p>
+            <div className="hero-actions">
+              <a className="button primary" href={resumeUrl}>
+                <Download size={17} />
+                Download resume
+              </a>
+              <a
+                className="button secondary"
+                href={projects.length ? "#work" : "#contact"}
+              >
+                {projects.length ? "Explore my work" : "Get in touch"}
+                <ArrowDown size={17} />
+              </a>
+            </div>
+            <div className="hero-socials">
+              {profile.github && (
+                <a
+                  href={profile.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Github size={17} />
+                  GitHub
+                  <ArrowUpRight size={13} />
+                </a>
+              )}
+              {profile.linkedin && (
+                <a
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin size={17} />
+                  LinkedIn
+                  <ArrowUpRight size={13} />
+                </a>
+              )}
+              <a href={`mailto:${profile.email}`}>
+                <Mail size={17} />
+                Email me
+                <ArrowUpRight size={13} />
+              </a>
+            </div>
+          </div>
+          <div className="hero-card" aria-label="Portfolio overview">
+            <div className="card-topline">
+              <span>PROFILE / {new Date().getUTCFullYear()}</span>
+              <Code2 size={18} />
+            </div>
+            <div className="hero-initials">
+              {initials(profile.name)}
+              <span>.</span>
+            </div>
+            <div className="card-name">{profile.name}</div>
+            <div className="card-role">{profile.title}</div>
+            <div className="card-rule" />
+            <div className="card-bottom">
+              <span>
+                Projects, experience,
+                <br />
+                and the work behind them.
+              </span>
+              <ArrowUpRight size={25} />
+            </div>
+            <div className="orb orb-one" />
+            <div className="orb orb-two" />
+          </div>
+        </section>
+        <div className="intro-strip">
+          <div className="container strip-inner">
+            <span>Curiosity. Craft. Continuous learning.</span>
+            <a href="#contact">
+              Let’s connect <ArrowUpRight size={16} />
+            </a>
+          </div>
+        </div>
+        {projects.length > 0 && (
+          <section id="work" className="section container">
+            <SectionHeading
+              number="01"
+              label="Selected work"
+              title="From idea to implementation."
+              note="A closer look at the applications I’ve worked on."
+            />
+            <div className="project-grid">
+              {projects.map((project, index) => (
+                <article
+                  className={`project-card ${project.featured ? "featured" : ""}`}
+                  key={project.id}
+                >
+                  <div className="project-visual">
+                    <span className="project-index">
+                      PROJECT {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="project-symbol">
+                      <Code2
+                        size={project.featured ? 64 : 44}
+                        strokeWidth={1}
+                      />
+                    </div>
+                    <span className="visual-label">
+                      {project.featured
+                        ? "Featured project"
+                        : project.status || "Project spotlight"}
+                    </span>
+                    <span className="visual-arrow">
+                      <ArrowUpRight size={24} />
+                    </span>
+                  </div>
+                  <div className="project-body">
+                    <div className="project-title-row">
+                      <h3>{project.name}</h3>
+                      {project.status && (
+                        <span
+                          className={`badge ${project.status === "In progress" ? "in-progress" : ""}`}
+                        >
+                          {project.status}
+                        </span>
+                      )}
+                    </div>
+                    <p>{project.summary}</p>
+                    {project.bullets.length > 0 && (
+                      <ul className="project-bullets">
+                        {project.bullets.map((bullet, i) => (
+                          <li key={i}>{bullet}</li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="tags">
+                      {project.technologies.map((tech, i) => (
+                        <span key={`${tech}-${i}`}>{tech}</span>
+                      ))}
+                    </div>
+                    <div className="project-links">
+                      {project.demoUrl && (
+                        <a
+                          href={project.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Live demo <ArrowUpRight size={15} />
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Github size={15} />
+                          Source / GitHub <ArrowUpRight size={15} />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+        {experiences.length > 0 && (
+          <section id="experience" className="section section-tinted">
+            <div className="container experience-layout">
+              <SectionHeading
+                number="02"
+                label="Experience"
+                title="Learning through doing."
+              />
+              <div className="experience-list">
+                {experiences.map((entry) => (
+                  <article className="experience-item" key={entry.id}>
+                    <div className="experience-meta">
+                      <span className="timeline-dot" />
+                      <span>{experiencePeriod(entry)}</span>
+                      {entry.location && <span>{entry.location}</span>}
+                    </div>
+                    <h3>{entry.role}</h3>
+                    <div className="company">{entry.company}</div>
+                    {entry.bullets.length > 0 && (
+                      <ul>
+                        {entry.bullets.map((bullet, i) => (
+                          <li key={i}>{bullet}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+        {skillGroups.length > 0 && (
+          <section id="skills" className="section container">
+            <SectionHeading
+              number="03"
+              label="Toolkit"
+              title="The tools behind the work."
+              note="Skills and technologies I bring to a project."
+            />
+            <div className="skill-grid">
+              {skillGroups.map((group, index) => (
+                <article className="skill-card" key={group.id}>
+                  <span className="skill-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3>{group.name}</h3>
+                  <div className="tags">
+                    {group.skills.map((skill, i) => (
+                      <span key={`${skill}-${i}`}>{skill}</span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+        {(education.length > 0 ||
+          certifications.length > 0 ||
+          languages.length > 0) && (
+          <section className="section credentials-section">
+            <div className="container credentials-grid">
+              {education.length > 0 && (
+                <div>
+                  <span className="eyebrow">04 / Education</span>
+                  <h2>A foundation to build on.</h2>
+                  <div className="education-list">
+                    {education.map((entry) => (
+                      <article key={entry.id}>
+                        <span>{educationPeriod(entry)}</span>
+                        <h3>{entry.qualification}</h3>
+                        <p>{entry.institution}</p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="credentials-aside">
+                {certifications.length > 0 && (
+                  <div>
+                    <span className="eyebrow">Certifications</span>
+                    <div className="certification-list">
+                      {certifications.map((entry) => (
+                        <article key={entry.id}>
+                          <span className="cert-icon">↗</span>
+                          <div>
+                            <h3>
+                              {entry.url ? (
+                                <a
+                                  href={entry.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {entry.name}
+                                  <ArrowUpRight size={14} />
+                                </a>
+                              ) : (
+                                entry.name
+                              )}
+                            </h3>
+                            <p>
+                              {[entry.issuer, entry.year]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </p>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {languages.length > 0 && (
+                  <div className="language-block">
+                    <span className="eyebrow">Languages</span>
+                    <div className="tags">
+                      {languages.map((entry) => (
+                        <span key={entry.id}>{entry.name}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+        <section id="contact" className="contact-section">
+          <div className="container contact-inner">
+            <div>
+              <span className="eyebrow">Let’s connect</span>
+              <h2>
+                Have something
+                <br />
+                in mind<span>?</span>
+              </h2>
+              <p>I’d be happy to hear from you.</p>
+              {profile.location && (
+                <span className="contact-location">
+                  <MapPin size={15} />
+                  {profile.location}
+                </span>
+              )}
+            </div>
+            <div className="contact-links">
+              <a className="contact-email" href={`mailto:${profile.email}`}>
+                {profile.email}
+                <ArrowUpRight size={28} />
+              </a>
+              {profile.phone && (
+                <a
+                  className="contact-phone"
+                  href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}
+                >
+                  {profile.phone}
+                </a>
+              )}
+              <div className="contact-socials">
+                {profile.linkedin && (
+                  <a
+                    href={profile.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn <ArrowUpRight size={15} />
+                  </a>
+                )}
+                {profile.github && (
+                  <a
+                    href={profile.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub <ArrowUpRight size={15} />
+                  </a>
+                )}
+                <a href={resumeUrl}>
+                  Download resume <Download size={15} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer className="container site-footer">
+        <span>
+          © {new Date().getUTCFullYear()} {shortName}
+        </span>
+        <span>Built with care. Always evolving.</span>
+        <a href="#main">Back to top ↑</a>
+      </footer>
+    </>
+  );
 }

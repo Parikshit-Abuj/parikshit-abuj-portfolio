@@ -1,3 +1,8 @@
 import type { NextConfig } from "next";
-const config: NextConfig = { poweredByHeader: false, serverExternalPackages: ["@react-pdf/renderer"] };
+import { fileURLToPath } from "node:url";
+const config: NextConfig = {
+  poweredByHeader: false,
+  serverExternalPackages: ["@react-pdf/renderer"],
+  turbopack: { root: fileURLToPath(new URL(".", import.meta.url)) },
+};
 export default config;
