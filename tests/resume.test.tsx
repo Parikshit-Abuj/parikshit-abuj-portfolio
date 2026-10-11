@@ -47,6 +47,67 @@ async function extracted(pdf: Buffer) {
   await loading.destroy();
   return pages;
 }
+it("keeps long names, links, entry headings and dates inside the page", async () => {
+  const content = structuredClone(fixture);
+  content.profile.name = "Parikshit ".repeat(9).trim();
+  content.profile.github = `https://github.com/example/${"repository".repeat(80)}`;
+  content.projects[0].githubUrl = content.profile.github;
+  content.projects[0].name =
+    "A long project title covering workflows, integration, inventory, billing and reporting";
+  content.projects[0].startDate = "2026-01";
+  content.projects[0].endDate = "2026-12";
+  const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const loading = getDocument({
+    data: new Uint8Array(await renderResumeBuffer(content)),
+    useSystemFonts: true,
+  });
+  const doc = await loading.promise;
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const width = page.getViewport({ scale: 1 }).width;
+    for (const item of (await page.getTextContent()).items)
+      if ("str" in item && item.str.trim()) {
+        expect(item.transform[4], item.str).toBeGreaterThanOrEqual(35);
+        expect(item.transform[4] + item.width, item.str).toBeLessThanOrEqual(
+          width - 35,
+        );
+      }
+  }
+  await loading.destroy();
+});
+it("renders optional qualifications and dates with readable text order and omits empty placeholders", async () => {
+  const content = structuredClone(fixture);
+  Object.assign(content.education[0], {
+    board: "Example University",
+    location: "Pune",
+    resultType: "CGPA",
+    resultValue: "8.2",
+    resultScale: "10",
+    highlights: ["Academic distinction"],
+  });
+  Object.assign(content.projects[0], {
+    startDate: "2026-01",
+    endDate: "2026-06",
+  });
+  content.certifications[0].credentialId = "SQL-123";
+  content.languages[0].proficiency = "Professional";
+  const text = (await extracted(await renderResumeBuffer(content))).join(" ");
+  for (const value of [
+    "CGPA: 8.2/10",
+    "Example University",
+    "Pune",
+    "Academic distinction",
+    "Jan 2026 - Jun 2026",
+    "Credential ID: SQL-123",
+    "English: Professional",
+  ])
+    expect(text).toContain(value);
+  expect(text.indexOf("Example Institute")).toBeLessThan(
+    text.indexOf("B.Tech, Computer Science"),
+  );
+  const plain = (await extracted(await renderResumeBuffer(fixture))).join(" ");
+  expect(plain).not.toMatch(/undefined|CGPA:|Credential ID:|Not specified/);
+});
 it("extracts education and ordered custom content while excluding hidden and website-only entries", async () => {
   const content = structuredClone(fixture);
   content.education = [
@@ -140,4 +201,20 @@ it("retains maximum-length skills across pages without shrinking or clipping", a
   expect(text).toContain("Technology 0:");
   expect(text).toContain("Technology 59:");
   expect(text).toContain("Professional Summary");
+});
+
+it("lets oversized education and project entries continue without losing their final content", async () => {
+  const content = structuredClone(fixture);
+  content.education[0].highlights = Array.from({ length: 10 }, (_, i) =>
+    `Academic highlight ${i}: `.padEnd(295, " verified coursework"),
+  );
+  content.projects[0].bullets = Array.from({ length: 30 }, (_, i) =>
+    `Project workflow ${i}: `.padEnd(1190, " tested application integration"),
+  );
+  const pages = await extracted(await renderResumeBuffer(content));
+  const text = pages.join(" ");
+  expect(pages.length).toBeGreaterThan(2);
+  expect(text).toContain("Academic highlight 9:");
+  expect(text).toContain("Project workflow 29:");
+  expect(text).toContain("Certifications");
 });

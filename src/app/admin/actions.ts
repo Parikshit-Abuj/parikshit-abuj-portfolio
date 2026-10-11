@@ -27,13 +27,19 @@ function normalize(content: unknown) {
               (value) => typeof value !== "string" || value.trim().length > 0,
             );
   if (copy && typeof copy === "object")
-    for (const key of ["projects", "experiences", "skillGroups"] as const) {
+    for (const key of [
+      "projects",
+      "experiences",
+      "skillGroups",
+      "education",
+    ] as const) {
       if (Array.isArray(copy[key]))
         for (const entry of copy[key])
           for (const property of [
             "bullets",
             "skills",
             "technologies",
+            "highlights",
           ] as const) {
             if (property in entry) {
               const record = entry as unknown as Record<string, unknown>;

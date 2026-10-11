@@ -6,6 +6,8 @@ import {
   experiencePeriod,
   publicContent,
   sectionOrder,
+  academicResult,
+  projectPeriod,
   type PortfolioContent,
 } from "@/lib/portfolio";
 function External({
@@ -54,6 +56,7 @@ export function PortfolioView({
                 <h3>{e.name}</h3>
                 {e.status && <span className="badge">{e.status}</span>}
               </div>
+              {projectPeriod(e) && <p>{projectPeriod(e)}</p>}
               <p>
                 {e.summary.length > 260
                   ? `${e.summary.slice(0, 260).trim()}…`
@@ -130,6 +133,15 @@ export function PortfolioView({
                 <h3>{e.qualification}</h3>
                 <p>{e.institution}</p>
                 <p>{educationPeriod(e)}</p>
+                {[e.board, e.location, academicResult(e)].filter(Boolean)
+                  .length > 0 && (
+                  <p>
+                    {[e.board, e.location, academicResult(e)]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                )}
+                <Bullets items={e.highlights || []} />
               </article>
             ))}
           </div>
@@ -145,12 +157,19 @@ export function PortfolioView({
                   )}
                 </p>
                 <p>{[e.issuer, e.year].filter(Boolean).join(" · ")}</p>
+                {e.credentialId && <p>Credential ID: {e.credentialId}</p>}
               </article>
             ))}
             {d.languages.length > 0 && (
               <>
                 <h3>Languages</h3>
-                <p>{d.languages.map((e) => e.name).join(", ")}</p>
+                <p>
+                  {d.languages
+                    .map((e) =>
+                      e.proficiency ? `${e.name}: ${e.proficiency}` : e.name,
+                    )
+                    .join(", ")}
+                </p>
               </>
             )}
           </div>

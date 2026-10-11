@@ -63,6 +63,42 @@ afterAll(async () => {
 });
 
 describe("database authorization and atomic publication", () => {
+  it("preserves optional resume fields through save and publish while filtering hidden records", async () => {
+    const content = structuredClone(fixture);
+    Object.assign(content.education[0], {
+      board: "University",
+      location: "Pune",
+      resultType: "CGPA",
+      resultValue: "8.2",
+      resultScale: "10",
+      highlights: ["Distinction"],
+    });
+    content.education.push({
+      ...content.education[0],
+      id: crypto.randomUUID(),
+      visible: false,
+      resultValue: "9.9",
+      institution: "Hidden school",
+    });
+    Object.assign(content.projects[0], {
+      startDate: "2026-01",
+      endDate: "2026-06",
+    });
+    content.certifications[0].credentialId = "SQL-123";
+    content.languages[0].proficiency = "Fluent";
+    await as("authenticated", owner);
+    await database.query("select public.save_portfolio_draft($1::jsonb,1)", [
+      JSON.stringify(content),
+    ]);
+    await database.query("select public.publish_portfolio(2)");
+    await as("anon");
+    const visible = (await published())[0].content;
+    expect(visible.education).toEqual([content.education[0]]);
+    expect(visible.projects[0].endDate).toBe("2026-06");
+    expect(visible.certifications[0].credentialId).toBe("SQL-123");
+    expect(visible.languages[0].proficiency).toBe("Fluent");
+    expect(JSON.stringify(visible)).not.toContain("Hidden school");
+  });
   it("anonymous visitors cannot read drafts, owner identity, or invoke mutations", async () => {
     await as("anon");
     expect(await published()).toEqual([]);

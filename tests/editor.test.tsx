@@ -147,6 +147,33 @@ it.each([false, true])(
   },
 );
 
+it("shows supplied education, project, certification and language details without score placeholders", () => {
+  const content = structuredClone(fixture);
+  Object.assign(content.education[0], {
+    resultType: "Percentage",
+    resultValue: "85",
+    board: "Example University",
+    highlights: ["Academic distinction"],
+  });
+  Object.assign(content.projects[0], {
+    startDate: "2026-01",
+    endDate: "2026-06",
+  });
+  content.certifications[0].credentialId = "SQL-123";
+  content.languages[0].proficiency = "Fluent";
+  render(<PortfolioView content={content} />);
+  for (const value of [
+    /Percentage: 85%/,
+    /Example University/,
+    /Academic distinction/,
+    /Jan 2026 - Jun 2026/,
+    /Credential ID: SQL-123/,
+    /English: Fluent/,
+  ])
+    expect(screen.getByText(value)).toBeTruthy();
+  expect(screen.queryByText(/CGPA:/)).toBeNull();
+});
+
 it("replaces and removes a portrait in draft while reset restores the saved preview", async () => {
   const oldPath = `${crypto.randomUUID()}/${crypto.randomUUID()}.webp`,
     newPath = `${crypto.randomUUID()}/${crypto.randomUUID()}.webp`;

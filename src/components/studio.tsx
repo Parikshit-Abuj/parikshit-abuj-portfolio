@@ -32,11 +32,14 @@ type FieldSpec = {
   type?: "textarea" | "array" | "month" | "year" | "url" | "select";
   wide?: boolean;
   hint?: string;
+  options?: string[];
 };
 const fields: Record<CollectionKey, FieldSpec[]> = {
   projects: [
     { key: "name", label: "Project name" },
     { key: "status", label: "Status", type: "select" },
+    { key: "startDate", label: "Start date (optional)", type: "month" },
+    { key: "endDate", label: "End date (optional)", type: "month" },
     {
       key: "summary",
       label: "Project description",
@@ -85,16 +88,50 @@ const fields: Record<CollectionKey, FieldSpec[]> = {
   education: [
     { key: "qualification", label: "Qualification" },
     { key: "institution", label: "Institution / board" },
+    { key: "board", label: "Board / university affiliation (optional)" },
+    { key: "location", label: "Location (optional)" },
     { key: "startYear", label: "Start year (optional)", type: "year" },
     { key: "endYear", label: "End year (optional)", type: "year" },
+    {
+      key: "resultType",
+      label: "Academic result type (optional)",
+      type: "select",
+      options: ["CGPA", "Percentage", "Grade"],
+    },
+    {
+      key: "resultValue",
+      label: "Academic result",
+      hint: "Enter the original value, without % or a converted score.",
+    },
+    {
+      key: "resultScale",
+      label: "CGPA scale",
+      hint: "For example, 10 or 4. Enter the scale used by your institution.",
+    },
+    {
+      key: "highlights",
+      label: "Academic highlights (optional)",
+      type: "array",
+      wide: true,
+      hint: "One honor or relevant coursework statement per line. Include only confirmed facts.",
+    },
   ],
   certifications: [
     { key: "name", label: "Certification" },
     { key: "issuer", label: "Issuer (optional)" },
     { key: "year", label: "Year (optional)", type: "year" },
     { key: "url", label: "Certificate URL (optional)", type: "url" },
+    { key: "credentialId", label: "Credential ID (optional)" },
   ],
-  languages: [{ key: "name", label: "Language", wide: true }],
+  languages: [
+    { key: "name", label: "Language" },
+    {
+      key: "proficiency",
+      label: "Proficiency (optional)",
+      type: "select",
+      options: ["Native", "Fluent", "Professional", "Conversational", "Basic"],
+    },
+  ],
 };
 const profileFields: FieldSpec[] = [
   { key: "name", label: "Full name" },
@@ -152,9 +189,12 @@ function EditorField({
           value={rendered}
           onChange={(event) => onChange(event.target.value)}
         >
-          <option value="">No status label</option>
-          <option>In progress</option>
-          <option>Completed</option>
+          <option value="">
+            {spec.options ? "Not specified" : "No status label"}
+          </option>
+          {(spec.options || ["In progress", "Completed"]).map((option) => (
+            <option key={option}>{option}</option>
+          ))}
         </select>
       ) : (
         <input
@@ -285,6 +325,9 @@ export function Studio({
               ...entry,
               [key]: value,
               ...(key === "current" && value ? { endDate: "" } : {}),
+              ...(key === "resultType"
+                ? { resultValue: "", resultScale: "" }
+                : {}),
             }
           : entry,
       ),
@@ -617,19 +660,28 @@ export function Studio({
                         </div>
                       </div>
                       <div className="field-grid">
-                        {fields[active].map((spec) => (
-                          <EditorField
-                            key={spec.key}
-                            spec={spec}
-                            value={record[spec.key]}
-                            onChange={(value) =>
-                              updateEntry(active, entry.id, spec.key, value)
-                            }
-                            disabled={
-                              spec.key === "endDate" && Boolean(record.current)
-                            }
-                          />
-                        ))}
+                        {fields[active]
+                          .filter(
+                            (spec) =>
+                              (spec.key !== "resultValue" ||
+                                record.resultType) &&
+                              (spec.key !== "resultScale" ||
+                                record.resultType === "CGPA"),
+                          )
+                          .map((spec) => (
+                            <EditorField
+                              key={spec.key}
+                              spec={spec}
+                              value={record[spec.key]}
+                              onChange={(value) =>
+                                updateEntry(active, entry.id, spec.key, value)
+                              }
+                              disabled={
+                                spec.key === "endDate" &&
+                                Boolean(record.current)
+                              }
+                            />
+                          ))}
                       </div>
                       <div className="entry-toggles">
                         <label className="toggle-label">

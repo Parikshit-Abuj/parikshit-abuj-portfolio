@@ -1,4 +1,4 @@
-# ParikshitAbuj.com — Portfolio & Resume CMS
+# Parikshit Abuj Portfolio & Resume CMS
 
 A personal portfolio with one private owner editor. Recruiters can browse the published portfolio and download an A4 PDF resume. The owner can change the profession, contact details, skills, experience, projects, education, certifications, and languages.
 
@@ -55,7 +55,9 @@ Password-recovery verification was explicitly deferred by the owner after the ho
 
 ## Resume layout, custom sections, and portrait
 
-The resume is a selectable-text A4 PDF with black text, 11 pt body type, standard headings, and natural pagination. Education includes every visible record, including Class X and XII. No photograph is included in the PDF. Formatting supports common parsing requirements; it does not promise an ATS score or universal parser acceptance.
+The resume is a selectable-text, single-column A4 PDF with black Times type, a centered 22 pt name, 11 pt body text, 16 mm margins, thin section rules, hanging bullets, and right-aligned dates. Short project entries stay together; long entries paginate naturally without shrinking the text. The default order is Summary, Technical Skills, Experience, Projects, Education, Certifications, and Languages. Education includes every visible record, including Class X and XII. No photograph is included in the PDF. Formatting supports common parsing requirements; it does not promise an ATS score or universal parser acceptance.
+
+Education supports optional board/university affiliation, location, academic highlights, and a CGPA (with scale), percentage, or grade. Changing the result type clears the previous score; empty fields are omitted. Projects support optional start/end months, certifications a credential ID, and languages a proficiency. These fields appear in both the published website and resume. Existing records remain compatible and no database migration is required for these optional fields. Enter only verified information; missing marks or dates are never inferred.
 
 In the owner studio, use **Resume Layout** or **Website Layout** to move sections independently. Identity and contact remain fixed. Restore default order is available. The saved draft PDF page count appears beside the revision.
 

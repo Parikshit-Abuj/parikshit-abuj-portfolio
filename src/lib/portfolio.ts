@@ -22,10 +22,10 @@ const item = { id: z.string().uuid(), visible: z.boolean() };
 const bullets = z.array(required(1200)).max(30);
 export const resumeDefaults = [
   "summary",
-  "education",
   "skillGroups",
   "experiences",
   "projects",
+  "education",
   "certifications",
   "languages",
 ];
@@ -127,17 +127,30 @@ export const portfolioSchema = z.object({
     .max(100),
   projects: z
     .array(
-      z.object({
-        ...item,
-        name: required(150),
-        summary: required(3000),
-        technologies: z.array(required(80)).max(40),
-        bullets,
-        demoUrl: link,
-        githubUrl: link,
-        featured: z.boolean(),
-        status: z.enum(["", "In progress", "Completed"]),
-      }),
+      z
+        .object({
+          ...item,
+          name: required(150),
+          summary: required(3000),
+          technologies: z.array(required(80)).max(40),
+          bullets,
+          demoUrl: link,
+          githubUrl: link,
+          featured: z.boolean(),
+          status: z.enum(["", "In progress", "Completed"]),
+          startDate: month.optional(),
+          endDate: month.optional(),
+        })
+        .refine(
+          (entry) =>
+            !entry.startDate ||
+            !entry.endDate ||
+            entry.endDate >= entry.startDate,
+          {
+            message: "End date must be after start date.",
+            path: ["endDate"],
+          },
+        ),
     )
     .max(100),
   education: z
@@ -149,6 +162,35 @@ export const portfolioSchema = z.object({
           institution: required(180),
           startYear: year,
           endYear: year,
+          board: text(180).optional(),
+          location: text(100).optional(),
+          resultType: z.enum(["", "CGPA", "Percentage", "Grade"]).optional(),
+          resultValue: text(40).optional(),
+          resultScale: text(20).optional(),
+          highlights: z.array(required(300)).max(10).optional(),
+        })
+        .superRefine((entry, ctx) => {
+          const kind = entry.resultType || "",
+            value = entry.resultValue || "",
+            scale = entry.resultScale || "";
+          if (!kind && !value && !scale) return;
+          const issue = (message: string, path: string) =>
+            ctx.addIssue({ code: "custom", message, path: [path] });
+          if (!kind) issue("Choose a result type.", "resultType");
+          if (!value) issue("Enter the academic result.", "resultValue");
+          if (
+            kind === "Percentage" &&
+            (!/^\d+(\.\d+)?$/.test(value) || Number(value) > 100)
+          )
+            issue("Percentage must be between 0 and 100.", "resultValue");
+          if (kind === "CGPA") {
+            if (!/^\d+(\.\d+)?$/.test(scale) || Number(scale) <= 0)
+              issue("Enter a positive CGPA scale.", "resultScale");
+            if (!/^\d+(\.\d+)?$/.test(value) || Number(value) > Number(scale))
+              issue("CGPA must be between 0 and its scale.", "resultValue");
+          }
+          if (kind !== "CGPA" && scale)
+            issue("A scale is only used for CGPA.", "resultScale");
         })
         .refine(
           (entry) =>
@@ -167,10 +209,28 @@ export const portfolioSchema = z.object({
         issuer: text(150),
         year,
         url: link,
+        credentialId: text(150).optional(),
       }),
     )
     .max(100),
-  languages: z.array(z.object({ ...item, name: required(80) })).max(30),
+  languages: z
+    .array(
+      z.object({
+        ...item,
+        name: required(80),
+        proficiency: z
+          .enum([
+            "",
+            "Native",
+            "Fluent",
+            "Professional",
+            "Conversational",
+            "Basic",
+          ])
+          .optional(),
+      }),
+    )
+    .max(30),
 });
 
 export type PortfolioContent = z.infer<typeof portfolioSchema>;
@@ -331,6 +391,26 @@ export function experiencePeriod(
 }
 export function educationPeriod(entry: PortfolioContent["education"][number]) {
   return [entry.startYear, entry.endYear].filter(Boolean).join(" - ");
+}
+export function academicResult(entry: PortfolioContent["education"][number]) {
+  if (!entry.resultType || !entry.resultValue) return "";
+  if (entry.resultType === "CGPA")
+    return `CGPA: ${entry.resultValue}/${entry.resultScale}`;
+  if (entry.resultType === "Percentage")
+    return `Percentage: ${entry.resultValue}%`;
+  return `Grade: ${entry.resultValue}`;
+}
+export function projectPeriod(entry: PortfolioContent["projects"][number]) {
+  return [
+    formatMonth(entry.startDate || ""),
+    entry.endDate
+      ? formatMonth(entry.endDate)
+      : entry.startDate && entry.status === "In progress"
+        ? "Present"
+        : "",
+  ]
+    .filter(Boolean)
+    .join(" - ");
 }
 export function initials(name: string) {
   const parts = name.trim().split(/\s+/);

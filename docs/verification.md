@@ -36,6 +36,15 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 - Public and private preview render exactly one resume link with their respective download endpoint. Both Contact shortcuts target the single contact section. All 25 tests, type checking, and formatting checks pass.
 - Browser review confirmed desktop, 390-pixel mobile, and 320-pixel mobile layouts without horizontal overflow. Contact navigation closes the menu; outside-click dismissal and Escape handling still work. The mobile header gives the name sufficient room after removing its resume button.
 
+## Classic resume and optional academic details
+
+- The final type check, production build, formatting check, 32 unit/database/component/PDF tests, and 10 read-only HTTP checks passed.
+- The owner editor saved and published revision 11. The anonymous resume and portrait endpoints both returned revision 11, and the recruiter page displayed the revised Full-Stack Developer headline and project descriptions.
+- Education now accepts affiliation, location, academic highlights, and CGPA/scale, percentage, or grade. A hidden temporary entry was saved and reloaded to verify score persistence; an invalid percentage was rejected, clearing the result removed its inputs, and the temporary entry was removed before publication. All three original education records remain. Unknown marks were left blank.
+- Optional project months, certification credential IDs, and language proficiency were exercised and reset without changing the original records. Database and rendering tests verify optional-field persistence, output, omitted empty values, chronological validation, and privacy filtering.
+- The published two-page A4 PDF was exported, rendered, and visually reviewed on both pages. It uses black Times text, 11 pt body type, centered identity/contact, thin rules, hanging bullets, right-aligned dates, and natural pagination. Short projects retain their links on the same page; oversized entries and long URLs are covered by text extraction and page-boundary tests.
+- Shared summary and project wording was revised without inventing metrics, grades, dates, or credentials. The portfolio CMS remains included in the resume. No additional database migration or frontend deployment was performed.
+
 ## Deferred by the owner
 
 - On 11 October 2026, the owner explicitly asked to skip password-recovery verification and continue implementation. Recovery-email delivery and quota-error handling are confirmed; successful reset and subsequent sign-in remain unverified. Recovery must start and finish in the same browser. Password entry and submission stay with the owner.

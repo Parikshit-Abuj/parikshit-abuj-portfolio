@@ -19,48 +19,72 @@ import {
   experiencePeriod,
   publicContent,
   sectionOrder,
+  academicResult,
+  projectPeriod,
   type PortfolioContent,
 } from "@/lib/portfolio";
 Font.registerHyphenationCallback((word) => [word]);
+function urlText(value: string) {
+  const text = value.replace(/^https?:\/\//, "");
+  // Explicit line breaks preserve every URL character without adding hyphens.
+  return text.length > 110 ? text.match(/.{1,50}/g)!.join("\n") : text;
+}
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 42.5,
-    paddingBottom: 52,
-    paddingHorizontal: 42.5,
-    fontFamily: "Helvetica",
+    paddingTop: 45.35,
+    paddingBottom: 45.35,
+    paddingHorizontal: 45.35,
+    fontFamily: "Times-Roman",
     fontSize: 11,
     color: "#000000",
-    lineHeight: 1.35,
+    lineHeight: 1.2,
   },
-  identity: { marginBottom: 6 },
-  name: { fontFamily: "Helvetica-Bold", fontSize: 20 },
-  role: { marginTop: 4 },
-  contacts: { marginTop: 5, fontSize: 10 },
+  identity: { marginBottom: 4, textAlign: "center" },
+  name: { fontFamily: "Times-Bold", fontSize: 22, lineHeight: 1.2 },
+  role: { marginTop: 3 },
+  contacts: { marginTop: 4, fontSize: 10 },
   link: { color: "#000000", textDecoration: "underline" },
-  section: { marginTop: 14 },
+  section: { marginTop: 11 },
   heading: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Times-Bold",
     fontSize: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#bbbbbb",
-    paddingBottom: 4,
-    marginBottom: 7,
+    borderBottomColor: "#000000",
+    paddingBottom: 2,
+    marginBottom: 5,
   },
-  entry: { marginBottom: 9 },
-  title: { fontFamily: "Helvetica-Bold" },
+  entry: { marginBottom: 7 },
+  title: { fontFamily: "Times-Bold" },
+  row: { flexDirection: "row", justifyContent: "space-between", gap: 12 },
+  rowTitle: { flexGrow: 1, flexShrink: 1 },
+  date: { fontSize: 10, textAlign: "right", maxWidth: 130, flexShrink: 0 },
+  subtitle: { fontFamily: "Times-Italic", marginTop: 1 },
   meta: { fontSize: 10, marginTop: 2 },
   body: { marginTop: 3 },
-  bullet: { marginTop: 3, paddingLeft: 10 },
+  bulletRow: { flexDirection: "row", marginTop: 2 },
+  bulletMark: { width: 10 },
+  bulletText: { flex: 1 },
 });
 function Bullets({ items }: { items: string[] }) {
   return (
     <>
       {items.map((text, i) => (
-        <Text key={i} style={styles.bullet} orphans={2} widows={2}>
-          - {text}
-        </Text>
+        <View key={i} style={styles.bulletRow}>
+          <Text style={styles.bulletMark}>•</Text>
+          <Text style={styles.bulletText} orphans={2} widows={2}>
+            {text}
+          </Text>
+        </View>
       ))}
     </>
+  );
+}
+function EntryHeading({ title, date }: { title: string; date?: string }) {
+  return (
+    <View style={styles.row} wrap={false}>
+      <Text style={[styles.title, styles.rowTitle]}>{title}</Text>
+      {date && <Text style={styles.date}>{date}</Text>}
+    </View>
   );
 }
 function Heading({ children }: { children: string }) {
@@ -107,10 +131,20 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
     if (id === "education" && data.education.length) {
       title = "Education";
       body = data.education.map((e) => (
-        <View key={e.id} style={styles.entry} wrap={false}>
-          <Text style={styles.title}>{e.qualification}</Text>
-          <Text>{e.institution}</Text>
-          <Text style={styles.meta}>{educationPeriod(e)}</Text>
+        <View key={e.id} style={styles.entry}>
+          <View wrap={false}>
+            <EntryHeading title={e.institution} date={educationPeriod(e)} />
+            <Text style={styles.subtitle}>{e.qualification}</Text>
+            {[e.board, e.location, academicResult(e)].filter(Boolean).length >
+              0 && (
+              <Text style={styles.meta}>
+                {[e.board, e.location, academicResult(e)]
+                  .filter(Boolean)
+                  .join(" | ")}
+              </Text>
+            )}
+          </View>
+          <Bullets items={e.highlights || []} />
         </View>
       ));
     }
@@ -118,11 +152,10 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       title = "Experience";
       body = data.experiences.map((e) => (
         <View key={e.id} style={styles.entry}>
-          <View wrap={false}>
-            <Text style={styles.title}>{e.role}</Text>
-            <Text>{e.company}</Text>
-            <Text style={styles.meta}>
-              {[experiencePeriod(e), e.location].filter(Boolean).join(" | ")}
+          <View wrap={false} minPresenceAhead={28}>
+            <EntryHeading title={e.role} date={experiencePeriod(e)} />
+            <Text style={styles.subtitle}>
+              {[e.company, e.location].filter(Boolean).join(" | ")}
             </Text>
           </View>
           <Bullets items={e.bullets} />
@@ -132,13 +165,23 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
     if (id === "projects" && data.projects.length) {
       title = "Projects";
       body = data.projects.map((e) => (
-        <View key={e.id} style={styles.entry}>
-          <View wrap={false}>
-            <Text style={styles.title}>
-              {e.name}
-              {e.status ? ` | ${e.status}` : ""}
-            </Text>
-            <Text style={styles.meta}>{e.technologies.join(", ")}</Text>
+        <View
+          key={e.id}
+          style={styles.entry}
+          wrap={
+            [
+              e.name,
+              e.technologies.join(", "),
+              e.summary,
+              ...e.bullets,
+              e.githubUrl,
+              e.demoUrl,
+            ].join(" ").length > 1400 || e.bullets.length > 10
+          }
+        >
+          <View wrap={false} minPresenceAhead={28}>
+            <EntryHeading title={e.name} date={projectPeriod(e)} />
+            <Text style={styles.subtitle}>{e.technologies.join(", ")}</Text>
           </View>
           <Text style={styles.body} orphans={2} widows={2}>
             {e.summary}
@@ -147,14 +190,14 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
           {e.githubUrl && (
             <Text style={styles.meta}>
               <Link style={styles.link} src={e.githubUrl}>
-                {e.githubUrl.replace(/^https?:\/\//, "")}
+                {urlText(e.githubUrl)}
               </Link>
             </Text>
           )}
           {e.demoUrl && (
             <Text style={styles.meta}>
               <Link style={styles.link} src={e.demoUrl}>
-                {e.demoUrl.replace(/^https?:\/\//, "")}
+                {urlText(e.demoUrl)}
               </Link>
             </Text>
           )}
@@ -165,24 +208,40 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       title = "Certifications";
       body = data.certifications.map((e) => (
         <View key={e.id} style={styles.entry} wrap={false}>
-          <Text style={styles.title}>
-            {e.url ? (
-              <Link style={styles.link} src={e.url}>
-                {e.name}
-              </Link>
-            ) : (
-              e.name
-            )}
-          </Text>
+          <View style={styles.row}>
+            <Text style={[styles.title, styles.rowTitle]}>
+              {e.url ? (
+                <Link style={styles.link} src={e.url}>
+                  {e.name}
+                </Link>
+              ) : (
+                e.name
+              )}
+            </Text>
+            {e.year && <Text style={styles.date}>{e.year}</Text>}
+          </View>
           <Text style={styles.meta}>
-            {[e.issuer, e.year].filter(Boolean).join(" | ")}
+            {[
+              e.issuer,
+              e.credentialId ? `Credential ID: ${e.credentialId}` : "",
+            ]
+              .filter(Boolean)
+              .join(" | ")}
           </Text>
         </View>
       ));
     }
     if (id === "languages" && data.languages.length) {
       title = "Languages";
-      body = <Text>{data.languages.map((e) => e.name).join(", ")}</Text>;
+      body = (
+        <Text>
+          {data.languages
+            .map((e) =>
+              e.proficiency ? `${e.name}: ${e.proficiency}` : e.name,
+            )
+            .join(" | ")}
+        </Text>
+      );
     }
     if (id.startsWith("custom:")) {
       const s = data.customSections?.find((s) => `custom:${s.id}` === id);
@@ -190,12 +249,10 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
         title = s.title;
         body = s.entries.map((e) => (
           <View key={e.id} style={styles.entry}>
-            <View wrap={false}>
-              <Text style={styles.title}>{e.title}</Text>
-              {(e.organization || e.date) && (
-                <Text style={styles.meta}>
-                  {[e.organization, e.date].filter(Boolean).join(" | ")}
-                </Text>
+            <View wrap={false} minPresenceAhead={28}>
+              <EntryHeading title={e.title} date={e.date} />
+              {e.organization && (
+                <Text style={styles.meta}>{e.organization}</Text>
               )}
             </View>
             {e.description && (
@@ -207,7 +264,7 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
             {e.url && (
               <Text style={styles.meta}>
                 <Link style={styles.link} src={e.url}>
-                  {e.url.replace(/^https?:\/\//, "")}
+                  {urlText(e.url)}
                 </Link>
               </Text>
             )}
@@ -233,7 +290,7 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       : null;
     return (
       <View key={id} style={styles.section}>
-        <View wrap={false}>
+        <View wrap={false} minPresenceAhead={28}>
           <Heading>{title}</Heading>
           {lead}
         </View>
@@ -255,18 +312,19 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
             {p.phone ? ` | ${p.phone}` : ""}
             {p.location ? ` | ${p.location}` : ""}
           </Text>
-          {p.linkedin && (
+          {(p.linkedin || p.github) && (
             <Text style={styles.contacts}>
-              <Link style={styles.link} src={p.linkedin}>
-                {p.linkedin.replace(/^https?:\/\//, "")}
-              </Link>
-            </Text>
-          )}
-          {p.github && (
-            <Text style={styles.contacts}>
-              <Link style={styles.link} src={p.github}>
-                {p.github.replace(/^https?:\/\//, "")}
-              </Link>
+              {p.linkedin && (
+                <Link style={styles.link} src={p.linkedin}>
+                  {urlText(p.linkedin)}
+                </Link>
+              )}
+              {p.linkedin && p.github ? " | " : ""}
+              {p.github && (
+                <Link style={styles.link} src={p.github}>
+                  {urlText(p.github)}
+                </Link>
+              )}
             </Text>
           )}
         </View>
