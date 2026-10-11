@@ -29,4 +29,3 @@ $$;
 revoke all on function public.publish_portfolio(integer) from public;
 grant execute on function public.publish_portfolio(integer) to authenticated;
 commit;
-
