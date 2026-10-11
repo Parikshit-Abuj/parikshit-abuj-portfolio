@@ -5,7 +5,7 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 ## Verified
 
 - Type checking, production build, formatting, and 15 unit/database/PDF tests passed.
-- Six read-only HTTP checks passed against the actual backend, including the published-snapshot branch after first publication.
+- Read-only HTTP checks passed against the actual backend, including the published-snapshot branch after first publication.
 - Owner login and the imported private draft were verified in the browser.
 - All six collections were exercised through add, edit, save, reload, hide, and delete. Temporary verification entries were removed and the original professional headline restored.
 - Changing the current headline to QA Engineer changed the private preview and its PDF while preserving historical job titles. The original headline was restored before publication.
@@ -16,10 +16,11 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 - The downloaded published PDF contained all 70 checked content fields from the snapshot, after accounting for line-break hyphenation. Both A4 pages were rendered and visually reviewed; no glyphs extended outside the page bounds.
 - Anonymous requests to all four private editor routes redirected to login. Anonymous database reads disclosed neither the owner record nor the private draft.
 - Public signup is disabled in the hosted authentication settings.
+- A callback-origin regression was reproduced: the development request URL changed 127.0.0.1 to localhost in authentication redirects. The callback now uses the configured origin; the login page redirects aliases to it before recovery begins. Regression checks cover the alias redirect, external-destination rejection, and the missing browser-verifier retry message. The email redirect now matches the configured callback exactly, without an extra destination query.
 
 ## Remaining before final handoff
 
-- The owner must verify recovery-email delivery, password reset, and subsequent sign-in in the same browser. Password entry and submission stay with the owner.
+- The owner received a recovery email, but its callback failed before password entry. After the callback fix, the owner must request a fresh link and verify password reset and subsequent sign-in in the same browser. Password entry and submission stay with the owner.
 - Finalize the portfolio project's status and description after the remaining owner flow is verified; it currently says In progress.
 
 ## Deployment gate

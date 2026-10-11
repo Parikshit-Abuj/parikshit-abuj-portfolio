@@ -40,7 +40,7 @@ export function AuthForm({
         router.refresh();
       } else if (recovery) {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/callback?next=/admin/reset-password`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         });
         if (error)
           throw new Error(
@@ -48,7 +48,7 @@ export function AuthForm({
           );
         setMessage({
           error: false,
-          text: "If this is the owner account, you’ll receive a recovery link. Open it in this browser to set a new password.",
+          text: "If this is the owner account, you’ll receive a recovery link. Open the newest email in this same browser and keep this page open until you finish.",
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({

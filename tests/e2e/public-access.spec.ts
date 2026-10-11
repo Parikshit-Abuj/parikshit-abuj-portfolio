@@ -1,6 +1,57 @@
 import { test, expect } from "@playwright/test";
 import { PDFDocument } from "pdf-lib";
 
+test("authentication callbacks retain the configured origin and reject external destinations", async ({
+  request,
+}) => {
+  const origin = new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
+  ).origin;
+  const response = await request.get(
+    "/auth/callback?next=https://example.com",
+    { maxRedirects: 0 },
+  );
+  expect(response.status()).toBe(307);
+  expect(response.headers().location).toBe(
+    `${origin}/admin/login?error=recovery`,
+  );
+});
+
+test("localhost authentication requests return to the configured origin before creating cookies", async ({
+  request,
+}) => {
+  const origin = new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
+  ).origin;
+  test.skip(
+    origin !== "http://127.0.0.1:3000",
+    "This alias check is specific to the local configuration.",
+  );
+  const response = await request.get("http://localhost:3000/admin/login", {
+    maxRedirects: 0,
+  });
+  expect(response.status()).toBe(307);
+  expect(response.headers().location).toBe(`${origin}/admin/login`);
+});
+
+test("a recovery callback without its browser verifier gives a safe retry message", async ({
+  request,
+}) => {
+  const origin = new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
+  ).origin;
+  const response = await request.get(
+    "/auth/callback?code=invalid-test-code&next=https://example.com",
+    { maxRedirects: 0 },
+  );
+  expect(response.status()).toBe(307);
+  expect(response.headers().location).toBe(
+    `${origin}/admin/login?error=recovery_browser`,
+  );
+  const page = await request.get("/admin/login?error=recovery_browser");
+  expect(await page.text()).toContain("Keep this site address unchanged.");
+});
+
 for (const path of [
   "/admin",
   "/admin/preview",
