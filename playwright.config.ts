@@ -6,16 +6,23 @@ try {
   if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
 }
 
+const remoteOrigin = process.env.E2E_BASE_URL
+  ? new URL(process.env.E2E_BASE_URL).origin
+  : undefined;
+const baseURL = remoteOrigin ?? "http://127.0.0.1:3000";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
   workers: 1,
-  use: { baseURL: "http://127.0.0.1:3000" },
+  use: { baseURL },
   // These HTTP tests use no owner password and never write portfolio data.
-  webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: true,
-    timeout: 120_000,
-  },
+  webServer: remoteOrigin
+    ? undefined
+    : {
+        command: "npm run dev",
+        url: "http://127.0.0.1:3000",
+        reuseExistingServer: true,
+        timeout: 120_000,
+      },
 });

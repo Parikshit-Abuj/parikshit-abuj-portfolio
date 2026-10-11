@@ -1,12 +1,16 @@
 import { test, expect } from "@playwright/test";
 import { PDFDocument } from "pdf-lib";
 
+const configuredOrigin = new URL(
+  process.env.E2E_BASE_URL ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "http://127.0.0.1:3000",
+).origin;
+
 test("authentication callbacks retain the configured origin and reject external destinations", async ({
   request,
 }) => {
-  const origin = new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
-  ).origin;
+  const origin = configuredOrigin;
   const response = await request.get(
     "/auth/callback?next=https://example.com",
     { maxRedirects: 0 },
@@ -20,9 +24,7 @@ test("authentication callbacks retain the configured origin and reject external 
 test("localhost authentication requests return to the configured origin before creating cookies", async ({
   request,
 }) => {
-  const origin = new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
-  ).origin;
+  const origin = configuredOrigin;
   test.skip(
     origin !== "http://127.0.0.1:3000",
     "This alias check is specific to the local configuration.",
@@ -37,9 +39,7 @@ test("localhost authentication requests return to the configured origin before c
 test("a recovery callback without its browser verifier gives a safe retry message", async ({
   request,
 }) => {
-  const origin = new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
-  ).origin;
+  const origin = configuredOrigin;
   const response = await request.get(
     "/auth/callback?code=invalid-test-code&next=https://example.com",
     { maxRedirects: 0 },
@@ -122,9 +122,7 @@ test("public resume uses the published revision and is absent before first publi
 test("portrait endpoints reject anonymous writes and external upload origins", async ({
   request,
 }) => {
-  const origin = new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
-  ).origin;
+  const origin = configuredOrigin;
   const foreign = await request.post("/admin/profile-photo", {
     headers: { Origin: "https://example.com" },
     data: "",

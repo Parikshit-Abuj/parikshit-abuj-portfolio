@@ -45,9 +45,10 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 - The published two-page A4 PDF was exported, rendered, and visually reviewed on both pages. It uses black Times text, 11 pt body type, centered identity/contact, thin rules, hanging bullets, right-aligned dates, and natural pagination. Short projects retain their links on the same page; oversized entries and long URLs are covered by text extraction and page-boundary tests.
 - Shared summary and project wording was revised without inventing metrics, grades, dates, or credentials. The portfolio CMS remains included in the resume. No additional database migration or frontend deployment was performed.
 
-## Deferred by the owner
+## Password recovery follow-up
 
 - On 11 October 2026, the owner explicitly asked to skip password-recovery verification and continue implementation. Recovery-email delivery and quota-error handling are confirmed; successful reset and subsequent sign-in remain unverified. Recovery must start and finish in the same browser. Password entry and submission stay with the owner.
+- Later on 11 October 2026, the owner reported that password recovery worked successfully. This supersedes the earlier local recovery deferral. The result is owner-reported, not an independently observed password-entry test; HTTPS recovery on the future deployed address remains a launch check.
 
 ## Handoff
 
@@ -56,5 +57,11 @@ The implementation is ready for local use. The portfolio project is included in 
 ## Deployment gate
 
 Publishing a database snapshot is distinct from deploying the website. Vercel or another professional host still requires the owner's approval. No purchased domain or deployed portfolio URL is claimed. Configure the approved production origin, authentication callbacks, and email delivery before deployment.
+
+## Vercel launch preparation
+
+- The owner selected Vercel with an included `.vercel.app` address and no domain purchase. Repository configuration pins Node.js 24.x and supplies Next.js, `npm ci`, and `npm run build` settings. Vercel local link files are ignored.
+- Type checking, formatting, production build, all 32 existing tests, and all 10 anonymous HTTP checks passed after these changes. The HTTP suite accepts `E2E_BASE_URL` for post-launch checks and uses the selected origin for callback expectations without starting a local server.
+- Account sign-in and repository authorization are being completed manually by the owner in Chrome. No Vercel project address, frontend deployment, or live HTTPS verification is yet claimed. Deployment requires review of the final settings and explicit launch approval.
 
 These observations describe this verification run. They do not replace rerunning appropriate checks after future code or configuration changes. Personal seed data, exported PDFs, credentials, and environment files remain outside Git.
