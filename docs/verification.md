@@ -17,12 +17,16 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 - Anonymous requests to all four private editor routes redirected to login. Anonymous database reads disclosed neither the owner record nor the private draft.
 - Public signup is disabled in the hosted authentication settings.
 - A callback-origin regression was reproduced: the development request URL changed 127.0.0.1 to localhost in authentication redirects. The callback now uses the configured origin; the login page redirects aliases to it before recovery begins. Regression checks cover the alias redirect, external-destination rejection, and the missing browser-verifier retry message. The email redirect now matches the configured callback exactly, without an extra destination query.
-- Recovery request failures now distinguish email quota exhaustion, request throttling, and unauthorized recipients. The owner's latest browser screenshot confirms the email sending limit was reached: the application displayed the message mapped specifically from `over_email_send_rate_limit`. A successful fresh request is pending the provider's quota reset or an approved custom SMTP setup.
+- Recovery request failures now distinguish email quota exhaustion, request throttling, and unauthorized recipients. The owner's browser screenshot confirms the email sending limit was reached: the application displayed the message mapped specifically from `over_email_send_rate_limit`.
+- After the owner signed in again, the portfolio project's status was changed to Completed and its description updated to describe the implemented CRUD, draft publishing, and synchronized PDF features. The owner dashboard confirmed publication of revision 5. The public website displayed the final entry, and the downloaded two-page A4 resume contained the same completed status and description. Both pages were rendered and visually reviewed. All nine HTTP checks passed again against this published snapshot.
 
-## Remaining before final handoff
+## Deferred by the owner
 
-- Recovery-email delivery is confirmed. After the callback-origin fix, a missing-verifier error was traced to starting recovery in the Codex browser and opening the email in Chrome, which have separate cookie stores. The owner must request a fresh link in Chrome and finish it in Chrome to verify password reset and subsequent sign-in. Password entry and submission stay with the owner.
-- Finalize the portfolio project's status and description after the remaining owner flow is verified; it currently says In progress.
+- On 11 October 2026, the owner explicitly asked to skip password-recovery verification and continue implementation. Recovery-email delivery and quota-error handling are confirmed; successful reset and subsequent sign-in remain unverified. Recovery must start and finish in the same browser. Password entry and submission stay with the owner.
+
+## Handoff
+
+The implementation is ready for local use. The portfolio project is included in the published content and exported resume. Deployment setup and post-deployment checks are documented in [deployment.md](deployment.md).
 
 ## Deployment gate
 

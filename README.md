@@ -51,4 +51,4 @@ Unit/database checks do not prove a hosted Supabase login or browser publishing 
 
 After approval, connect this GitHub repository to Vercel and configure the three environment variables for the production origin. Update Supabase's Site URL and allowed recovery callback to the approved domain. Review authentication email delivery and confirm the database migration, owner assignment, and RLS settings in the intended production project. Do not upload `.env.local`, `.local/`, passwords, private drafts, or the source resume to GitHub.
 
-The initial portfolio project entry remains **In progress** until the complete owner and publishing flows have been verified. No demo URL or purchased domain is claimed before it exists.
+Password-recovery verification was explicitly deferred by the owner after the hosted email quota was reached. The flow remains implemented, with callback and failure-path checks, but a successful password reset is not claimed. See [verification evidence](docs/verification.md). No demo URL or purchased domain is claimed before it exists.
