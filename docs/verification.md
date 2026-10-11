@@ -17,7 +17,7 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 - Anonymous requests to all four private editor routes redirected to login. Anonymous database reads disclosed neither the owner record nor the private draft.
 - Public signup is disabled in the hosted authentication settings.
 - A callback-origin regression was reproduced: the development request URL changed 127.0.0.1 to localhost in authentication redirects. The callback now uses the configured origin; the login page redirects aliases to it before recovery begins. Regression checks cover the alias redirect, external-destination rejection, and the missing browser-verifier retry message. The email redirect now matches the configured callback exactly, without an extra destination query.
-- Recovery request failures now distinguish email quota exhaustion, request throttling, and unauthorized recipients. A later recovery request failed before email delivery; the actual provider error still needs confirmation. The built-in email provider's small hourly allowance makes quota exhaustion a possibility, not a verified diagnosis.
+- Recovery request failures now distinguish email quota exhaustion, request throttling, and unauthorized recipients. The owner's latest browser screenshot confirms the email sending limit was reached: the application displayed the message mapped specifically from `over_email_send_rate_limit`. A successful fresh request is pending the provider's quota reset or an approved custom SMTP setup.
 
 ## Remaining before final handoff
 
