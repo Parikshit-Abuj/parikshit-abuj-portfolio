@@ -22,6 +22,8 @@ Next.js App Router, React, TypeScript, Tailwind CSS, Supabase Auth/PostgreSQL, a
 
 The public URL/key are sufficient for runtime connections. Initial database administration uses your Supabase dashboard session; no service key is included in the website.
 
+Supabase's built-in email provider currently permits only two authentication emails per hour per project and sends only to organization members. Repeated recovery tests can exhaust that allowance; wait for the limit to reset or configure an approved custom SMTP provider. The editor distinguishes email quota, request throttling, and unauthorized-recipient errors. See [Supabase email rate limits](https://supabase.com/docs/guides/auth/rate-limits) and [SMTP configuration](https://supabase.com/docs/guides/auth/auth-smtp).
+
 ## Optional local Supabase
 
 For offline backend development, install Docker and start its engine, then run `npm run db:start`. This starts the configured local Supabase stack and applies the migrations. Prepare `.local/portfolio-seed.json` and run `npm run setup:local`. This script only accepts a localhost backend, refuses to replace an existing owner or environment file, and saves generated owner credentials in ignored `.local/owner-login.json`. It leaves the initial draft unpublished.

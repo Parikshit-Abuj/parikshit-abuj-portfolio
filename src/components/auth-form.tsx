@@ -42,10 +42,23 @@ export function AuthForm({
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/auth/callback`,
         });
-        if (error)
+        if (error) {
+          if (error.code === "over_email_send_rate_limit")
+            throw new Error(
+              "The email sending limit has been reached. Wait for it to reset before requesting another recovery link.",
+            );
+          if (error.code === "over_request_rate_limit" || error.status === 429)
+            throw new Error(
+              "Too many recovery requests. Please wait before trying again.",
+            );
+          if (error.code === "email_address_not_authorized")
+            throw new Error(
+              "This email address is not allowed by the current email provider. Check your owner email and email delivery settings.",
+            );
           throw new Error(
             "The recovery request could not be sent. Please try again later.",
           );
+        }
         setMessage({
           error: false,
           text: "If this is the owner account, you’ll receive a recovery link. Open the newest email link in this same browser. If your email opens it in another browser, copy the link into this browser’s address bar instead. Keep this page open until you finish.",
