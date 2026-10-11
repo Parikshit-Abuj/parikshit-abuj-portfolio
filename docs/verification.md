@@ -30,6 +30,12 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 - Desktop and mobile layouts were reviewed. Keyboard disclosure, menu Escape handling, and menu closure after contact navigation were checked. Earlier responsive checks covered 360, 390, 768, 1366, and 1920 pixels. A later attempt to apply 320 pixels did not change the browser's reported viewport, so 320-pixel reflow and actual 200% browser zoom are not claimed as verified.
 - The final public preview screenshot and exported PDF are saved in ignored output directories. The original resume and portrait remain outside the repository.
 
+## Simplified portfolio navigation
+
+- Removed the repeated header/contact resume links, horizontal section navigation, and contact-section LinkedIn link. The introduction now contains the only resume download and a quieter Contact me text link; the menu provides section navigation.
+- Public and private preview render exactly one resume link with their respective download endpoint. Both Contact shortcuts target the single contact section. All 25 tests, type checking, and formatting checks pass.
+- Browser review confirmed desktop, 390-pixel mobile, and 320-pixel mobile layouts without horizontal overflow. Contact navigation closes the menu; outside-click dismissal and Escape handling still work. The mobile header gives the name sufficient room after removing its resume button.
+
 ## Deferred by the owner
 
 - On 11 October 2026, the owner explicitly asked to skip password-recovery verification and continue implementation. Recovery-email delivery and quota-error handling are confirmed; successful reset and subsequent sign-in remain unverified. Recovery must start and finish in the same browser. Password entry and submission stay with the owner.

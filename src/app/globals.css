@@ -1623,6 +1623,14 @@ h2 {
 .recruiter-hero .hero-actions {
   margin-top: 24px;
 }
+.recruiter-contact-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .recruiter-hero .hero-socials {
   margin-top: 22px;
   flex-wrap: wrap;
@@ -1634,16 +1642,8 @@ h2 {
   margin-top: 18px;
   border: 1px solid #dedede;
 }
-.recruiter-section-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  padding-block: 14px;
-  border-block: 1px solid #dedede;
-}
-.recruiter-section-nav a {
-  padding-block: 8px;
-  min-height: 44px;
+.recruiter-hero + .recruiter-section {
+  border-top: 1px solid #dedede;
 }
 .recruiter-section {
   padding-block: 48px;
@@ -1805,7 +1805,7 @@ h2 {
   }
   .recruiter-brand {
     font-size: 16px;
-    max-width: 45%;
+    max-width: calc(100% - 90px);
   }
   .recruiter-hero {
     grid-template-columns: 1fr;

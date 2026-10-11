@@ -116,9 +116,36 @@ describe("custom section editor", () => {
     );
     expect(
       screen.getAllByRole("link", { name: /Download resume/ }).length,
-    ).toBeGreaterThan(0);
+    ).toBe(1);
   });
 });
+
+it.each([false, true])(
+  "keeps one resume action and one contact destination (preview: %s)",
+  async (preview) => {
+    const user = userEvent.setup();
+    render(<PortfolioView content={fixture} preview={preview} />);
+    const resume = screen.getByRole("link", { name: "Download resume" });
+    expect(resume.getAttribute("href")).toBe(
+      preview ? "/admin/resume" : "/api/resume",
+    );
+    expect(
+      document.querySelectorAll(`a[href="${resume.getAttribute("href")}"]`),
+    ).toHaveLength(1);
+    expect(screen.getAllByRole("link", { name: "Contact me" })).toHaveLength(1);
+    expect(
+      screen.getByRole("link", { name: "Contact me" }).getAttribute("href"),
+    ).toBe("#contact");
+    expect(
+      screen.queryByRole("navigation", { name: "Portfolio sections" }),
+    ).toBeNull();
+    await user.click(document.querySelector(".recruiter-menu summary")!);
+    expect(
+      screen.getByRole("link", { name: "Contact" }).getAttribute("href"),
+    ).toBe("#contact");
+    expect(document.querySelectorAll("#contact")).toHaveLength(1);
+  },
+);
 
 it("replaces and removes a portrait in draft while reset restores the saved preview", async () => {
   const oldPath = `${crypto.randomUUID()}/${crypto.randomUUID()}.webp`,

@@ -1,4 +1,4 @@
-import { Download, ArrowUpRight, Mail } from "lucide-react";
+import { Download, ArrowUpRight } from "lucide-react";
 import { Portrait } from "./portrait";
 import { NavigationMenu } from "./navigation-menu";
 import {
@@ -176,16 +176,6 @@ export function PortfolioView({
     }
     if (body) sections.push({ id: id.replace(":", "-"), title, body });
   }
-  const navigation = (
-    <>
-      {sections.map((s) => (
-        <a key={s.id} href={`#${s.id}`}>
-          {s.title}
-        </a>
-      ))}
-      <a href="#contact">Contact</a>
-    </>
-  );
   return (
     <div className="recruiter-site">
       <a className="skip-link" href="#main">
@@ -203,9 +193,6 @@ export function PortfolioView({
             href={preview ? "/admin/preview" : "/"}
           >
             {p.name.split(" ")[0]} {p.name.split(" ").at(-1)}
-          </a>
-          <a className="button small primary" href={resume}>
-            <Download size={16} /> Resume
           </a>
           <NavigationMenu
             sections={sections.map(({ id, title }) => ({ id, title }))}
@@ -226,8 +213,8 @@ export function PortfolioView({
               <a className="button primary" href={resume}>
                 <Download size={17} /> Download resume
               </a>
-              <a className="button secondary" href="#contact">
-                <Mail size={17} /> Contact me
+              <a className="recruiter-contact-link" href="#contact">
+                Contact me
               </a>
             </div>
             <p className="recruiter-intro">{p.summary}</p>
@@ -244,12 +231,6 @@ export function PortfolioView({
             />
           )}
         </section>
-        <nav
-          className="container recruiter-section-nav"
-          aria-label="Portfolio sections"
-        >
-          {navigation}
-        </nav>
         {sections.map((s) => (
           <section className="container recruiter-section" id={s.id} key={s.id}>
             <h2>{s.title}</h2>
@@ -269,10 +250,6 @@ export function PortfolioView({
           {p.phone && (
             <a href={`tel:${p.phone.replace(/[^+\d]/g, "")}`}>{p.phone}</a>
           )}
-          <div className="project-links">
-            <a href={resume}>Download resume</a>
-            {p.linkedin && <External href={p.linkedin}>LinkedIn</External>}
-          </div>
         </section>
       </main>
       <footer className="container recruiter-footer">
