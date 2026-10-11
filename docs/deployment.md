@@ -1,6 +1,6 @@
 # Deployment handoff
 
-The website is not deployed. The owner requested approval before any online website deployment. Publishing a Supabase content snapshot does not authorize a frontend deployment or domain purchase.
+The owner completed the production redeployment at `https://parikshit-abuj-portfolio.vercel.app` after configuring Vercel and Supabase. On 11 October 2026, anonymous live checks verified the portfolio, portrait, PDF, protected editor routes, and callback origin. The final owner-session check saved, previewed, and published revision 15, including the actual live URL in the portfolio project. The public PDF returned revision 15. Sign-out protection was verified, and the owner reported successful HTTPS password recovery and subsequent sign-in. The initial preparation screen was resolved by applying the production environment variables in a new deployment. Detailed checks are tracked in the verification record.
 
 ## Selected host and manual setup
 
@@ -10,7 +10,7 @@ Use project name `parikshit-abuj-portfolio`, production branch `main`, Next.js p
 
 Node.js 24.x is pinned in `package.json`, matching the runtime used for local verification. Confirm 24.x in Vercel's build settings.
 
-Use the available `.vercel.app` address assigned to this project. The expected address is `https://parikshit-abuj-portfolio.vercel.app`, but availability must be confirmed in Vercel before using it as the production origin. If unavailable, accept Vercel's assigned alternative and use that exact origin throughout. `ParikshitAbuj.com` remains the project identity, not a purchased domain.
+The Vercel Production environment and public HTTPS response confirm `https://parikshit-abuj-portfolio.vercel.app` as the production origin. Use it for `NEXT_PUBLIC_SITE_URL`, Supabase Site URL, and the exact callback `https://parikshit-abuj-portfolio.vercel.app/auth/callback`. `ParikshitAbuj.com` remains the project identity, not a purchased domain.
 
 ## Environment values
 

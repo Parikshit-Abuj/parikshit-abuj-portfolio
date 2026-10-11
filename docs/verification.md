@@ -52,16 +52,27 @@ Checked on 11 October 2026 against the local Next.js application and the configu
 
 ## Handoff
 
-The implementation is ready for local use. The portfolio project is included in the published content and exported resume. Deployment setup and post-deployment checks are documented in [deployment.md](deployment.md).
+The portfolio is hosted at [parikshit-abuj-portfolio.vercel.app](https://parikshit-abuj-portfolio.vercel.app). The portfolio project is included in the published content and exported resume. Deployment setup and post-deployment checks are documented in [deployment.md](deployment.md).
 
 ## Deployment gate
 
-Publishing a database snapshot is distinct from deploying the website. Vercel or another professional host still requires the owner's approval. No purchased domain or deployed portfolio URL is claimed. Configure the approved production origin, authentication callbacks, and email delivery before deployment.
+Publishing a database snapshot is distinct from deploying the website. The owner approved and completed the Vercel deployment. The included Vercel address is live; no purchased domain is claimed. Production origin and authentication callbacks are configured.
 
 ## Vercel launch preparation
 
 - The owner selected Vercel with an included `.vercel.app` address and no domain purchase. Repository configuration pins Node.js 24.x and supplies Next.js, `npm ci`, and `npm run build` settings. Vercel local link files are ignored.
 - Type checking, formatting, production build, all 32 existing tests, and all 10 anonymous HTTP checks passed after these changes. The HTTP suite accepts `E2E_BASE_URL` for post-launch checks and uses the selected origin for callback expectations without starting a local server.
-- Account sign-in and repository authorization are being completed manually by the owner in Chrome. No Vercel project address, frontend deployment, or live HTTPS verification is yet claimed. Deployment requires review of the final settings and explicit launch approval.
+- At the preparation checkpoint, account sign-in and repository authorization were being completed manually by the owner in Chrome; deployment was held for configuration review. The subsequent production redeployment is verified below.
+- Subsequent GitHub/Vercel evidence confirms the initial deployment of commit `3040850` completed. The owner's Production settings screenshot confirms `parikshit-abuj-portfolio.vercel.app`. Anonymous HTTPS checks returned the preparation page (200) and unavailable resume (404), so a successful launch is not claimed. Production environment setup, callback configuration, and another approved deployment remain pending. At that checkpoint, further repository pushes were held because the Vercel Git integration can deploy them automatically. The owner subsequently completed configuration and redeployment.
 
 These observations describe this verification run. They do not replace rerunning appropriate checks after future code or configuration changes. Personal seed data, exported PDFs, credentials, and environment files remain outside Git.
+
+## Production redeployment checks
+
+- The owner saved the production environment variables, configured the exact HTTPS Supabase Site URL/callback, retained the local callback, and manually redeployed. The supplied Vercel screenshot shows Production Ready with source commit `3040850`.
+- The live HTTP suite passed 9 checks; the localhost-alias check was correctly skipped. This verifies the callback origin and retry behavior, anonymous editor/private PDF access restrictions, actual database privacy, published PDF revision, and portrait upload access restrictions.
+- The public portrait endpoint returned 200, WebP content, and revision 12. The actual portrait loaded in the browser. The browser's resume download succeeded; both A4 PDF pages were rendered and visually reviewed, retaining all three education records and the owner's updated experience location.
+- The public recruiter page was reviewed on desktop and at 390 pixels. The mobile document width was 375 pixels within a 390-pixel viewport, and the menu closed after navigation. No horizontal overflow was observed.
+- The live owner saved revision 15 with the actual Vercel URL on the existing ParikshitAbuj.com project. Reload retained the change, private preview showed it, and the public page retained revision 12 until publication. Publishing succeeded; the public page and PDF then used revision 15. Both updated PDF pages were rendered and reviewed. All three education records and the existing Pune experience location remain.
+- Sign-out completed, and a subsequent attempt to open /admin redirected to login. The owner reported a successful reset and subsequent sign-in on the live HTTPS site in Chrome; password entry and submission were performed by the owner.
+- The final anonymous HTTPS suite passed 9 checks with the local alias check skipped. Website content updates require Save draft and Publish, without a Git push or frontend deployment.

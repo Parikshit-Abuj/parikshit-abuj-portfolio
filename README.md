@@ -4,7 +4,7 @@ A personal portfolio with one private owner editor. Recruiters can browse the pu
 
 **Save draft → Preview → Publish** controls what visitors see. The public page and resume download read the same published snapshot. Hidden entries stay in the private draft and are removed from the public database snapshot as well as the website and PDF. Entries can be added, edited, deleted, reordered, or hidden.
 
-The name is the project identity; a domain has not been purchased. The website is not deployed. Vercel is the intended frontend host, with Supabase for authentication and PostgreSQL. Deployment and domain registration require the owner's approval.
+The website is hosted on Vercel at [parikshit-abuj-portfolio.vercel.app](https://parikshit-abuj-portfolio.vercel.app), with Supabase for authentication and PostgreSQL. The project uses the included Vercel address; no custom domain has been purchased or is planned.
 
 ## Stack
 
