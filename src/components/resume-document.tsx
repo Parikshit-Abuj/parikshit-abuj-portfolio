@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
   },
   identity: { marginBottom: 4, textAlign: "center" },
   name: { fontFamily: "Times-Bold", fontSize: 22, lineHeight: 1.2 },
-  role: { marginTop: 3 },
   contacts: { marginTop: 4, fontSize: 10 },
   link: { color: "#000000", textDecoration: "underline" },
   section: { marginTop: 11 },
@@ -307,7 +306,6 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       <Page size="A4" style={styles.page} wrap>
         <View style={styles.identity} wrap={false}>
           <Text style={styles.name}>{p.name}</Text>
-          <Text style={styles.role}>{p.title}</Text>
           <Text style={styles.contacts}>
             {p.phone && (
               <>
@@ -336,8 +334,8 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
                 </Link>
               </>
             )}
+            {p.location ? ` | ${p.location}` : ""}
           </Text>
-          {p.location && <Text style={styles.contacts}>{p.location}</Text>}
         </View>
         {sectionOrder(data, "resume").map(section)}
       </Page>

@@ -51,6 +51,7 @@ it("aligns contact links on one baseline and places entry dates and locations at
   const content = structuredClone(fixture);
   content.profile.phone = "+91 9529138839";
   content.profile.linkedin = "https://linkedin.com/in/example";
+  content.profile.location = "Mumbai";
   content.experiences[0].location = "Pune";
   content.education[0].location = "Nagpur";
   const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
@@ -71,8 +72,11 @@ it("aligns contact links on one baseline and places entry dates and locations at
     return item!;
   }
   const email = text(content.profile.email);
-  for (const value of [content.profile.phone, "LinkedIn", "GitHub"])
+  for (const value of [content.profile.phone, "LinkedIn", "GitHub", "Mumbai"])
     expect(text(value).transform[5]).toBeCloseTo(email.transform[5], 1);
+  expect(items.some((item) => item.str.includes(content.profile.title))).toBe(
+    false,
+  );
   const date = text("Jan 2026 - May 2026");
   const location = text("Pune");
   expect(date.transform[5]).toBeCloseTo(
