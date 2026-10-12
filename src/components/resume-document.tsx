@@ -141,8 +141,8 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       body = data.education.map((e) => (
         <View key={e.id} style={styles.entry}>
           <View wrap={false}>
-            <EntryHeading title={e.institution} date={e.location} />
-            <EntrySubtitle title={e.qualification} side={educationPeriod(e)} />
+            <EntryHeading title={e.institution} date={educationPeriod(e)} />
+            <EntrySubtitle title={e.qualification} side={e.location} />
             {[e.board, academicResult(e)].filter(Boolean).length > 0 && (
               <Text style={styles.meta}>
                 {[e.board, academicResult(e)].filter(Boolean).join(" | ")}

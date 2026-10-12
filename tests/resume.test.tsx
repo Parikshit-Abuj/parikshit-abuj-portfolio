@@ -85,11 +85,11 @@ it("aligns contact links on one baseline and places entry dates and locations at
       date.transform[4] + date.width,
       1,
     );
-  expect(text("Nagpur").transform[5]).toBeCloseTo(
+  expect(text("2022 - 2026").transform[5]).toBeCloseTo(
     text("Example Institute").transform[5],
     0,
   );
-  expect(text("2022 - 2026").transform[5]).toBeCloseTo(
+  expect(text("Nagpur").transform[5]).toBeCloseTo(
     text("B.Tech, Computer Science").transform[5],
     0,
   );
