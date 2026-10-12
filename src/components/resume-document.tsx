@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   title: { fontFamily: "Times-Bold" },
   row: { flexDirection: "row", justifyContent: "space-between", gap: 12 },
   rowTitle: { flexGrow: 1, flexShrink: 1 },
-  date: { fontSize: 10, textAlign: "right", maxWidth: 130, flexShrink: 0 },
+  date: { fontSize: 11, textAlign: "right", maxWidth: 130, flexShrink: 0 },
   subtitle: { fontFamily: "Times-Italic", marginTop: 1 },
   meta: { fontSize: 10, marginTop: 2 },
   body: { marginTop: 3 },
@@ -84,6 +84,14 @@ function EntryHeading({ title, date }: { title: string; date?: string }) {
     <View style={styles.row} wrap={false}>
       <Text style={[styles.title, styles.rowTitle]}>{title}</Text>
       {date && <Text style={styles.date}>{date}</Text>}
+    </View>
+  );
+}
+function EntrySubtitle({ title, side }: { title: string; side?: string }) {
+  return (
+    <View style={[styles.row, styles.subtitle]} wrap={false}>
+      <Text style={styles.rowTitle}>{title}</Text>
+      {side && <Text style={styles.date}>{side}</Text>}
     </View>
   );
 }
@@ -133,14 +141,11 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       body = data.education.map((e) => (
         <View key={e.id} style={styles.entry}>
           <View wrap={false}>
-            <EntryHeading title={e.institution} date={educationPeriod(e)} />
-            <Text style={styles.subtitle}>{e.qualification}</Text>
-            {[e.board, e.location, academicResult(e)].filter(Boolean).length >
-              0 && (
+            <EntryHeading title={e.institution} date={e.location} />
+            <EntrySubtitle title={e.qualification} side={educationPeriod(e)} />
+            {[e.board, academicResult(e)].filter(Boolean).length > 0 && (
               <Text style={styles.meta}>
-                {[e.board, e.location, academicResult(e)]
-                  .filter(Boolean)
-                  .join(" | ")}
+                {[e.board, academicResult(e)].filter(Boolean).join(" | ")}
               </Text>
             )}
           </View>
@@ -154,9 +159,7 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
         <View key={e.id} style={styles.entry}>
           <View wrap={false} minPresenceAhead={28}>
             <EntryHeading title={e.company} date={experiencePeriod(e)} />
-            <Text style={styles.subtitle}>
-              {[e.role, e.location].filter(Boolean).join(" | ")}
-            </Text>
+            <EntrySubtitle title={e.role} side={e.location} />
           </View>
           <Bullets items={e.bullets} />
         </View>
@@ -306,27 +309,35 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
           <Text style={styles.name}>{p.name}</Text>
           <Text style={styles.role}>{p.title}</Text>
           <Text style={styles.contacts}>
+            {p.phone && (
+              <>
+                <Link style={styles.link} src={`tel:${p.phone}`}>
+                  {p.phone}
+                </Link>
+                {" | "}
+              </>
+            )}
             <Link style={styles.link} src={`mailto:${p.email}`}>
               {p.email}
             </Link>
-            {p.phone ? ` | ${p.phone}` : ""}
-            {p.location ? ` | ${p.location}` : ""}
-          </Text>
-          {(p.linkedin || p.github) && (
-            <Text style={styles.contacts}>
-              {p.linkedin && (
+            {p.linkedin && (
+              <>
+                {" | "}
                 <Link style={styles.link} src={p.linkedin}>
-                  {urlText(p.linkedin)}
+                  LinkedIn
                 </Link>
-              )}
-              {p.linkedin && p.github ? " | " : ""}
-              {p.github && (
+              </>
+            )}
+            {p.github && (
+              <>
+                {" | "}
                 <Link style={styles.link} src={p.github}>
-                  {urlText(p.github)}
+                  GitHub
                 </Link>
-              )}
-            </Text>
-          )}
+              </>
+            )}
+          </Text>
+          {p.location && <Text style={styles.contacts}>{p.location}</Text>}
         </View>
         {sectionOrder(data, "resume").map(section)}
       </Page>

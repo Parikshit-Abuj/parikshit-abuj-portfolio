@@ -47,6 +47,64 @@ async function extracted(pdf: Buffer) {
   await loading.destroy();
   return pages;
 }
+it("aligns contact links on one baseline and places entry dates and locations at the right", async () => {
+  const content = structuredClone(fixture);
+  content.profile.phone = "+91 9529138839";
+  content.profile.linkedin = "https://linkedin.com/in/example";
+  content.experiences[0].location = "Pune";
+  content.education[0].location = "Nagpur";
+  const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const loading = getDocument({
+    data: new Uint8Array(await renderResumeBuffer(content)),
+    useSystemFonts: true,
+  });
+  const document = await loading.promise;
+  const page = await document.getPage(1);
+  const items = (await page.getTextContent()).items.filter(
+    (item) => "str" in item,
+  );
+  function text(value: string) {
+    const item =
+      items.find((item) => item.str.trim() === value) ??
+      items.find((item) => item.str.includes(value));
+    expect(item, value).toBeDefined();
+    return item!;
+  }
+  const email = text(content.profile.email);
+  for (const value of [content.profile.phone, "LinkedIn", "GitHub"])
+    expect(text(value).transform[5]).toBeCloseTo(email.transform[5], 1);
+  const date = text("Jan 2026 - May 2026");
+  const location = text("Pune");
+  expect(date.transform[5]).toBeCloseTo(
+    text("Example Company").transform[5],
+    0,
+  );
+  expect(location.transform[5]).toBeCloseTo(text("Developer").transform[5], 0);
+  for (const value of ["Pune", "Nagpur", "2022 - 2026"])
+    expect(text(value).transform[4] + text(value).width).toBeCloseTo(
+      date.transform[4] + date.width,
+      1,
+    );
+  expect(text("Nagpur").transform[5]).toBeCloseTo(
+    text("Example Institute").transform[5],
+    0,
+  );
+  expect(text("2022 - 2026").transform[5]).toBeCloseTo(
+    text("B.Tech, Computer Science").transform[5],
+    0,
+  );
+  const links = (await page.getAnnotations()).map(
+    (annotation) => annotation.url,
+  );
+  expect(links).toEqual(
+    expect.arrayContaining([
+      `mailto:${content.profile.email}`,
+      content.profile.github,
+      content.profile.linkedin,
+    ]),
+  );
+  await loading.destroy();
+});
 it("keeps long names, links, entry headings and dates inside the page", async () => {
   const content = structuredClone(fixture);
   content.profile.name = "Parikshit ".repeat(9).trim();
