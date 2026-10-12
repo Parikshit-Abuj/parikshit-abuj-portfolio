@@ -108,7 +108,7 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
     let title = "",
       body: React.ReactNode = null;
     if (id === "summary") {
-      title = "Professional Summary";
+      title = "Summary";
       body = (
         <Text orphans={2} widows={2}>
           {p.summary}

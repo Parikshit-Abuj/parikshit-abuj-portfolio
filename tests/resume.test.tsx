@@ -262,7 +262,7 @@ it("retains maximum-length skills across pages without shrinking or clipping", a
   expect(pages.length).toBeGreaterThan(1);
   expect(text).toContain("Technology 0:");
   expect(text).toContain("Technology 59:");
-  expect(text).toContain("Professional Summary");
+  expect(text).toContain("Summary");
 });
 
 it("lets oversized education and project entries continue without losing their final content", async () => {
