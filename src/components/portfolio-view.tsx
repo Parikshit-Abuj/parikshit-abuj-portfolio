@@ -207,12 +207,6 @@ export function PortfolioView({
       )}
       <header className="recruiter-header">
         <div className="container">
-          <a
-            className="recruiter-brand"
-            href={preview ? "/admin/preview" : "/"}
-          >
-            {p.name.split(" ")[0]} {p.name.split(" ").at(-1)}
-          </a>
           <NavigationMenu
             sections={sections.map(({ id, title }) => ({ id, title }))}
           />
@@ -223,9 +217,6 @@ export function PortfolioView({
           className={`container recruiter-hero ${!p.photoPath ? "no-portrait" : ""}`}
         >
           <div>
-            <p className="eyebrow">
-              {p.availability || "Professional portfolio"}
-            </p>
             <h1>{p.name}</h1>
             <p className="recruiter-role">{p.title}</p>
             {p.location && (
@@ -233,6 +224,9 @@ export function PortfolioView({
                 <MapPin size={16} aria-hidden="true" />
                 {p.location}
               </p>
+            )}
+            {p.availability && (
+              <p className="recruiter-availability">{p.availability}</p>
             )}
             <div className="hero-actions">
               <a className="button primary" href={resume}>

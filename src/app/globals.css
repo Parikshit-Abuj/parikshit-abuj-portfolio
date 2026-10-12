@@ -1560,20 +1560,15 @@ h2 {
   margin-inline: auto;
 }
 .recruiter-header {
-  border-bottom: 1px solid #dedede;
   background: #fff;
 }
 .recruiter-header > .container {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 20px;
-  min-height: 88px;
+  min-height: 64px;
   position: relative;
-}
-.recruiter-brand {
-  font-weight: 700;
-  margin-right: auto;
-  font-size: 18px;
 }
 .recruiter-menu summary {
   cursor: pointer;
@@ -1601,14 +1596,14 @@ h2 {
   grid-template-columns: 1fr 160px;
   gap: 64px;
   align-items: start;
-  padding-block: 56px 40px;
+  padding-block: 16px 40px;
 }
 .recruiter-hero.no-portrait {
   grid-template-columns: 1fr;
 }
 .recruiter-hero h1 {
   font-size: 44px;
-  margin: 10px 0;
+  margin: 0 0 10px;
   line-height: 1.15;
 }
 .recruiter-role {
@@ -1632,6 +1627,10 @@ h2 {
 }
 .recruiter-location svg {
   flex-shrink: 0;
+}
+.recruiter-availability {
+  margin-top: 8px;
+  font-size: 16px;
 }
 .recruiter-contact-link {
   display: inline-flex;
@@ -1810,17 +1809,12 @@ h2 {
   }
   .recruiter-header > .container {
     gap: 8px;
-    min-height: 76px;
-    flex-wrap: wrap;
-  }
-  .recruiter-brand {
-    font-size: 16px;
-    max-width: calc(100% - 90px);
+    min-height: 56px;
   }
   .recruiter-hero {
     grid-template-columns: 1fr;
     gap: 24px;
-    padding-block: 32px;
+    padding-block: 16px 32px;
   }
   .recruiter-hero h1 {
     font-size: 32px;
@@ -1868,7 +1862,6 @@ h2 {
   grid-template-columns: 1fr;
 }
 .recruiter-header .button,
-.recruiter-brand,
 .recruiter-footer a {
   min-height: 44px;
   display: inline-flex;
