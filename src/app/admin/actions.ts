@@ -147,6 +147,10 @@ export async function publishAction(
 }
 export async function signOutAction() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
+  if (error)
+    return {
+      error: "Sign-out failed. Please retry before leaving this device.",
+    };
   redirect("/admin/login");
 }

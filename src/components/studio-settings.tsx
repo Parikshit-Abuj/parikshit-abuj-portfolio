@@ -346,7 +346,11 @@ export function CustomEditor({
     </>
   );
 }
-export function PhotoEditor({ content, setContent }: Props) {
+export function PhotoEditor({
+  content,
+  setContent,
+  onBusyChange,
+}: Props & { onBusyChange?: (busy: boolean) => void }) {
   const [preview, setPreview] = useState<{ path: string; url: string } | null>(
       null,
     ),
@@ -360,6 +364,7 @@ export function PhotoEditor({ content, setContent }: Props) {
   );
   async function upload(file: File) {
     setBusy(true);
+    onBusyChange?.(true);
     setMessage("");
     try {
       const form = new FormData();
@@ -380,6 +385,7 @@ export function PhotoEditor({ content, setContent }: Props) {
       setMessage(e instanceof Error ? e.message : "Upload failed.");
     } finally {
       setBusy(false);
+      onBusyChange?.(false);
     }
   }
   return (

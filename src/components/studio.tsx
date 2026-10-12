@@ -279,6 +279,8 @@ export function Studio({
       | "websiteLayout"
     >("profile");
   const [busy, setBusy] = useState<"save" | "publish" | "logout" | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const blocked = Boolean(busy) || photoBusy;
   const [message, setMessage] = useState<{
     kind: "success" | "error";
     text: string;
@@ -304,13 +306,13 @@ export function Studio({
   const dirty = JSON.stringify(content) !== JSON.stringify(saved),
     hasUnpublished = revision !== published?.source_revision;
   useEffect(() => {
-    if (!dirty) return;
+    if (!dirty && !photoBusy) return;
     const warn = (event: BeforeUnloadEvent) => {
       event.preventDefault();
     };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  }, [dirty, photoBusy]);
   function updateEntry(
     section: CollectionKey,
     id: string,
@@ -394,7 +396,18 @@ export function Studio({
   function requestLogout() {
     const logout = async () => {
       setBusy("logout");
-      await signOutAction();
+      setMessage(null);
+      try {
+        const result = await signOutAction();
+        if (result?.error) setMessage({ kind: "error", text: result.error });
+      } catch {
+        setMessage({
+          kind: "error",
+          text: "Sign-out could not be confirmed. Your edits are still here; please retry.",
+        });
+      } finally {
+        setBusy(null);
+      }
     };
     if (dirty)
       setConfirmation({
@@ -450,7 +463,7 @@ export function Studio({
           <button
             className="button small secondary"
             onClick={requestLogout}
-            disabled={Boolean(busy)}
+            disabled={blocked}
           >
             <LogOut size={14} />
             Sign out
@@ -465,6 +478,7 @@ export function Studio({
                 <button
                   key={key}
                   className={active === key ? "active" : ""}
+                  disabled={blocked}
                   onClick={() => setActive(key)}
                 >
                   {extraLabels[key]}
@@ -473,6 +487,7 @@ export function Studio({
             )}
             <button
               className={active === "profile" ? "active" : ""}
+              disabled={blocked}
               onClick={() => setActive("profile")}
             >
               Profile & contact
@@ -482,6 +497,7 @@ export function Studio({
                 <button
                   className={active === section ? "active" : ""}
                   key={section}
+                  disabled={blocked}
                   onClick={() => setActive(section)}
                 >
                   {collectionLabels[section]}
@@ -525,7 +541,7 @@ export function Studio({
               active !== "websiteLayout" && (
                 <button
                   className="button small secondary"
-                  disabled={Boolean(busy)}
+                  disabled={blocked}
                   onClick={() =>
                     setContent((previous) => ({
                       ...previous,
@@ -538,7 +554,7 @@ export function Studio({
                 </button>
               )}
           </div>
-          <fieldset disabled={Boolean(busy)} className="editor-fieldset">
+          <fieldset disabled={blocked} className="editor-fieldset">
             {active === "profile" ? (
               <div>
                 <div className="field-grid">
@@ -560,7 +576,11 @@ export function Studio({
                     />
                   ))}
                 </div>
-                <PhotoEditor content={content} setContent={setContent} />
+                <PhotoEditor
+                  content={content}
+                  setContent={setContent}
+                  onBusyChange={setPhotoBusy}
+                />
               </div>
             ) : active === "resumeLayout" || active === "websiteLayout" ? (
               <LayoutEditor
@@ -761,7 +781,7 @@ export function Studio({
           {dirty && (
             <button
               className="button small secondary"
-              disabled={Boolean(busy)}
+              disabled={blocked}
               onClick={() =>
                 setConfirmation({
                   title: "Reset unsaved changes?",
@@ -780,7 +800,7 @@ export function Studio({
           )}
           <button
             className="button small secondary"
-            disabled={Boolean(busy) || dirty}
+            disabled={blocked || dirty}
             title={
               dirty
                 ? "Save your changes before previewing."
@@ -794,11 +814,11 @@ export function Studio({
             Preview
           </button>
           <a
-            className={`button small secondary ${dirty || busy ? "disabled-link" : ""}`}
+            className={`button small secondary ${dirty || blocked ? "disabled-link" : ""}`}
             href="/admin/resume"
-            aria-disabled={dirty || Boolean(busy)}
+            aria-disabled={dirty || blocked}
             onClick={(event) => {
-              if (dirty || busy) event.preventDefault();
+              if (dirty || blocked) event.preventDefault();
             }}
           >
             <Download size={15} />
@@ -806,7 +826,7 @@ export function Studio({
           </a>
           <button
             className="button small secondary"
-            disabled={Boolean(busy) || !dirty}
+            disabled={blocked || !dirty}
             onClick={() => void save()}
           >
             <Save size={15} />
@@ -814,7 +834,7 @@ export function Studio({
           </button>
           <button
             className="button small primary"
-            disabled={Boolean(busy) || dirty || !hasUnpublished}
+            disabled={blocked || dirty || !hasUnpublished}
             onClick={() =>
               setConfirmation({
                 title: "Publish this version?",

@@ -67,6 +67,13 @@ Publishing a database snapshot is distinct from deploying the website. The owner
 
 These observations describe this verification run. They do not replace rerunning appropriate checks after future code or configuration changes. Personal seed data, exported PDFs, credentials, and environment files remain outside Git.
 
+## Reliability review — 12 October 2026
+
+- Fixed two editor failure paths: a rejected sign-out request left controls disabled, and a portrait upload could finish during a save and lose the selected portrait. Sign-out provider errors now return a retry message; client errors release the editor without discarding edits. Portrait uploads temporarily block save, publish, reset, navigation, and sign-out until success or failure, and warn before leaving the page.
+- Four regression cases cover connection/provider sign-out failures, a delayed portrait upload followed by a save, and upload failure recovery. All 37 tests, type checking, formatting, and the production build passed. The production dependency audit reported no vulnerabilities.
+- Live anonymous HTTP checks passed 9 cases with the local alias check skipped. The public browser showed no captured warnings/errors; outside-click and Escape menu dismissal and project disclosure worked. Layout widths at 320, 390, and 768 pixels stayed within the viewport, and the portrait loaded.
+- Failure scenarios use isolated mocked requests to avoid changing the owner's production data or authentication credentials. Successful live recovery remains owner-reported from the deployment verification.
+
 ## Production redeployment checks
 
 - The owner saved the production environment variables, configured the exact HTTPS Supabase Site URL/callback, retained the local callback, and manually redeployed. The supplied Vercel screenshot shows Production Ready with source commit `3040850`.
