@@ -1623,6 +1623,16 @@ h2 {
 .recruiter-hero .hero-actions {
   margin-top: 24px;
 }
+.recruiter-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 16px;
+}
+.recruiter-location svg {
+  flex-shrink: 0;
+}
 .recruiter-contact-link {
   display: inline-flex;
   align-items: center;

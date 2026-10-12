@@ -1,4 +1,4 @@
-import { Download, ArrowUpRight } from "lucide-react";
+import { Download, ArrowUpRight, MapPin } from "lucide-react";
 import { Portrait } from "./portrait";
 import { NavigationMenu } from "./navigation-menu";
 import {
@@ -228,6 +228,12 @@ export function PortfolioView({
             </p>
             <h1>{p.name}</h1>
             <p className="recruiter-role">{p.title}</p>
+            {p.location && (
+              <p className="recruiter-location">
+                <MapPin size={16} aria-hidden="true" />
+                {p.location}
+              </p>
+            )}
             <div className="hero-actions">
               <a className="button primary" href={resume}>
                 <Download size={17} /> Download resume
@@ -240,7 +246,6 @@ export function PortfolioView({
             <div className="hero-socials">
               {p.github && <External href={p.github}>GitHub</External>}
               {p.linkedin && <External href={p.linkedin}>LinkedIn</External>}
-              {p.location && <span>{p.location}</span>}
             </div>
           </div>
           {p.photoPath && (
