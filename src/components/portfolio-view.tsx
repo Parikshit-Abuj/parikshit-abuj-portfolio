@@ -94,9 +94,9 @@ export function PortfolioView({
       title = "Experience";
       body = d.experiences.map((e) => (
         <article className="recruiter-entry" key={e.id}>
-          <h3>{e.role}</h3>
+          <h3>{e.company}</h3>
           <p>
-            <strong>{e.company}</strong>
+            <strong>{e.role}</strong>
           </p>
           <p>{[experiencePeriod(e), e.location].filter(Boolean).join(" · ")}</p>
           <Bullets items={e.bullets} />

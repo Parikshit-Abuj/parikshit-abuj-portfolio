@@ -153,9 +153,9 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       body = data.experiences.map((e) => (
         <View key={e.id} style={styles.entry}>
           <View wrap={false} minPresenceAhead={28}>
-            <EntryHeading title={e.role} date={experiencePeriod(e)} />
+            <EntryHeading title={e.company} date={experiencePeriod(e)} />
             <Text style={styles.subtitle}>
-              {[e.company, e.location].filter(Boolean).join(" | ")}
+              {[e.role, e.location].filter(Boolean).join(" | ")}
             </Text>
           </View>
           <Bullets items={e.bullets} />
