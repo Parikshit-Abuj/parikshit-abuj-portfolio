@@ -1560,7 +1560,11 @@ h2 {
   margin-inline: auto;
 }
 .recruiter-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   background: #fff;
+  border-bottom: 1px solid #dedede;
 }
 .recruiter-header > .container {
   display: flex;

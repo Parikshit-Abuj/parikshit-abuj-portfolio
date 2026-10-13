@@ -147,6 +147,24 @@ it.each([false, true])(
   },
 );
 
+it("keeps navigation open between section selections and closes on outside click or Escape", async () => {
+  const user = userEvent.setup();
+  render(<PortfolioView content={fixture} />);
+  const menu = document.querySelector<HTMLDetailsElement>(".recruiter-menu")!;
+  const toggle = menu.querySelector("summary")!;
+  await user.click(toggle);
+  for (const name of ["Projects", "Education and credentials"]) {
+    await user.click(screen.getByRole("link", { name }));
+    expect(menu.open).toBe(true);
+  }
+  await user.click(screen.getByRole("heading", { level: 1 }));
+  expect(menu.open).toBe(false);
+  await user.click(toggle);
+  await user.keyboard("{Escape}");
+  expect(menu.open).toBe(false);
+  expect(document.activeElement).toBe(toggle);
+});
+
 it("shows supplied education, project, certification and language details without score placeholders", () => {
   const content = structuredClone(fixture);
   Object.assign(content.education[0], {

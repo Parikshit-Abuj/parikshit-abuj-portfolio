@@ -32,13 +32,7 @@ export function NavigationMenu({
       <summary>Menu</summary>
       <nav aria-label="Main navigation">
         {[...sections, { id: "contact", title: "Contact" }].map((section) => (
-          <a
-            key={section.id}
-            href={`#${section.id}`}
-            onClick={() => {
-              if (menu.current) menu.current.open = false;
-            }}
-          >
+          <a key={section.id} href={`#${section.id}`}>
             {section.title}
           </a>
         ))}
