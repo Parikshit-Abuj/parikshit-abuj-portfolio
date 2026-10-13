@@ -116,7 +116,7 @@ export function ResumeDocument({ content }: { content: PortfolioContent }) {
       );
     }
     if (id === "skillGroups" && data.skillGroups.length) {
-      title = "Technical Skills";
+      title = "Skills";
       body = data.skillGroups.map((e) =>
         e.skills.join(", ").length > 500 ? (
           <View key={e.id} style={styles.body}>

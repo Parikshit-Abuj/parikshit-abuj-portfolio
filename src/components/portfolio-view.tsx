@@ -104,7 +104,7 @@ export function PortfolioView({
       ));
     }
     if (id === "skillGroups" && d.skillGroups.length) {
-      title = "Technical skills";
+      title = "Skills";
       body = (
         <div className="recruiter-skills">
           {d.skillGroups.map((e) => (
