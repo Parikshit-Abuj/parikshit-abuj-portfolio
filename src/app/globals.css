@@ -1565,29 +1565,38 @@ h2 {
 .recruiter-header > .container {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 20px;
   min-height: 64px;
   position: relative;
+  padding-block: 10px;
+}
+.recruiter-menu {
+  width: 100%;
 }
 .recruiter-menu summary {
   cursor: pointer;
-  padding: 10px;
+  width: fit-content;
+  padding: 10px 0;
   min-height: 44px;
 }
 .recruiter-menu nav {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  z-index: 10;
-  background: white;
-  border: 1px solid #dedede;
-  padding: 12px;
-  max-width: 300px;
-  box-shadow: 0 8px 25px #0001;
+  margin-top: 6px;
+  padding-block: 8px;
+  border-bottom: 1px solid #dedede;
+}
+.recruiter-menu[open] nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.recruiter-menu:not([open]) nav {
+  display: none;
 }
 .recruiter-menu nav a {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
   padding: 10px;
   min-height: 44px;
 }
@@ -1845,9 +1854,6 @@ h2 {
   .recruiter-footer {
     flex-direction: column;
     gap: 8px;
-  }
-  .recruiter-menu nav {
-    top: 100%;
   }
 }
 @media (prefers-reduced-motion: reduce) {
