@@ -18,8 +18,14 @@ function External({
   children: React.ReactNode;
 }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer">
-      {children} <ArrowUpRight size={14} />
+    <a
+      className="recruiter-external"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span>{children}</span>
+      <ArrowUpRight size={14} aria-hidden="true" />
     </a>
   );
 }

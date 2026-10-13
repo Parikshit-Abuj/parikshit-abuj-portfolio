@@ -1744,6 +1744,15 @@ h2 {
   margin-bottom: 18px;
   border-bottom: 1px solid #eee;
 }
+.recruiter-external {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+}
+.recruiter-external svg {
+  flex-shrink: 0;
+}
 .recruiter-entry:last-child {
   border: 0;
   margin-bottom: 0;
