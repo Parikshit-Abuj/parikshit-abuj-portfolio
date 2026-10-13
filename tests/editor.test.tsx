@@ -122,8 +122,7 @@ describe("custom section editor", () => {
 
 it.each([false, true])(
   "keeps one resume action and one contact destination (preview: %s)",
-  async (preview) => {
-    const user = userEvent.setup();
+  (preview) => {
     render(<PortfolioView content={fixture} preview={preview} />);
     const resume = screen.getByRole("link", { name: "Download resume" });
     expect(resume.getAttribute("href")).toBe(
@@ -139,7 +138,6 @@ it.each([false, true])(
     expect(
       screen.queryByRole("navigation", { name: "Portfolio sections" }),
     ).toBeNull();
-    await user.click(document.querySelector(".recruiter-menu summary")!);
     expect(
       screen.getByRole("link", { name: "Contact" }).getAttribute("href"),
     ).toBe("#contact");
@@ -147,22 +145,23 @@ it.each([false, true])(
   },
 );
 
-it("keeps navigation open between section selections and closes on outside click or Escape", async () => {
+it("keeps section navigation visible without a Menu toggle", async () => {
   const user = userEvent.setup();
   render(<PortfolioView content={fixture} />);
-  const menu = document.querySelector<HTMLDetailsElement>(".recruiter-menu")!;
-  const toggle = menu.querySelector("summary")!;
-  await user.click(toggle);
+  expect(screen.queryByText("Menu")).toBeNull();
+  const navigation = screen.getByRole("navigation", {
+    name: "Main navigation",
+  });
   for (const name of ["Projects", "Education and credentials"]) {
     await user.click(screen.getByRole("link", { name }));
-    expect(menu.open).toBe(true);
+    expect(screen.getByRole("navigation", { name: "Main navigation" })).toBe(
+      navigation,
+    );
   }
   await user.click(screen.getByRole("heading", { level: 1 }));
-  expect(menu.open).toBe(false);
-  await user.click(toggle);
-  await user.keyboard("{Escape}");
-  expect(menu.open).toBe(false);
-  expect(document.activeElement).toBe(toggle);
+  expect(
+    screen.getByRole("link", { name: "Contact" }).getAttribute("href"),
+  ).toBe("#contact");
 });
 
 it("shows supplied education, project, certification and language details without score placeholders", () => {

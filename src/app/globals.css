@@ -1575,39 +1575,20 @@ h2 {
   position: relative;
   padding-block: 10px;
 }
-.recruiter-menu {
+.recruiter-navigation {
   width: 100%;
   height: 44px;
-  position: relative;
-}
-.recruiter-menu summary {
-  cursor: pointer;
-  width: 72px;
-  padding: 10px 0;
-  min-height: 44px;
-}
-.recruiter-menu nav {
-  position: absolute;
-  left: 88px;
-  right: 0;
-  top: 0;
-  height: 44px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
 }
-.recruiter-menu nav::-webkit-scrollbar {
+.recruiter-navigation::-webkit-scrollbar {
   display: none;
 }
-.recruiter-menu[open] nav {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 12px;
-}
-.recruiter-menu:not([open]) nav {
-  display: none;
-}
-.recruiter-menu nav a {
+.recruiter-navigation a {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
