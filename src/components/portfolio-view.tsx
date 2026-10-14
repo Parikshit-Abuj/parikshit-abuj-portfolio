@@ -243,10 +243,6 @@ export function PortfolioView({
               </a>
             </div>
             <p className="recruiter-intro">{p.summary}</p>
-            <div className="hero-socials">
-              {p.github && <External href={p.github}>GitHub</External>}
-              {p.linkedin && <External href={p.linkedin}>LinkedIn</External>}
-            </div>
           </div>
           {p.photoPath && (
             <Portrait
