@@ -68,7 +68,7 @@ export function LayoutEditor({
   const ids = sectionOrder(content, channel);
   const label = (id: string) =>
     id === "summary"
-      ? "Professional Summary"
+      ? "Summary"
       : id === "credentials"
         ? "Education and credentials"
         : id.startsWith("custom:")

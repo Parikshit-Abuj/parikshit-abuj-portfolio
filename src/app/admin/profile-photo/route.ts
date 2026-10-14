@@ -1,16 +1,25 @@
 import { ownerClient, getDraft } from "@/lib/data";
+import { portfolioSchema } from "@/lib/portfolio";
 import sharp from "sharp";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const client = await ownerClient();
-    const draft = await getDraft();
-    if (!draft.content.profile.photoPath)
-      return new Response(null, { status: 404 });
+    const requestedPath = new URL(request.url).searchParams.get("v");
+    const path = requestedPath ?? (await getDraft()).content.profile.photoPath;
+    if (path === undefined) return new Response(null, { status: 404 });
+    const claims = await client.auth.getClaims();
+    if (
+      claims.error ||
+      !claims.data?.claims.sub ||
+      !portfolioSchema.shape.profile.shape.photoPath.safeParse(path).success ||
+      !path.startsWith(`${claims.data.claims.sub}/`)
+    )
+      return new Response(null, { status: 403 });
     const { data, error } = await client.storage
       .from("portfolio-media")
-      .download(draft.content.profile.photoPath);
+      .download(path);
     if (error || !data) return new Response(null, { status: 404 });
     return new Response(data, {
       headers: {

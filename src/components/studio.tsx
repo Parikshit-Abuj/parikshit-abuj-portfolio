@@ -142,7 +142,7 @@ const profileFields: FieldSpec[] = [
   },
   {
     key: "summary",
-    label: "Professional summary",
+    label: "Summary",
     type: "textarea",
     wide: true,
   },

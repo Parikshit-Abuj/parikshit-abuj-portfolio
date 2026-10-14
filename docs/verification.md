@@ -1,5 +1,15 @@
 # Verification record
 
+## Reliability review — 14 October 2026
+
+- Reproduced and fixed an unsaved portrait preview issue: after uploading a replacement and switching editor sections, the private image route ignored the requested image and returned the last saved portrait. The route now serves the requested upload only after owner authentication and path validation. Missing query parameters still use the saved draft; anonymous, expired-session, foreign-folder, and malformed-path requests cannot retrieve an upload.
+- Aligned the profile field and resume layout labels with the existing Summary heading.
+- All 46 unit, component, database, and PDF tests passed, including eight private portrait route regressions. Type checking, formatting, production build, and production dependency audit passed; the audit found no vulnerabilities.
+- Live anonymous HTTPS checks passed nine cases; the local-host alias check was skipped because the target is production. Checks cover owner route restrictions, private database reads, published resume revision, authentication callbacks, and portrait upload restrictions.
+- Reviewed project disclosure, portrait loading, contact links, and navigation in the live browser. Document widths stayed within 320, 390, and 768 pixel viewports. No captured browser warnings or errors appeared during this review.
+- Downloaded the current published resume and inspected both rendered A4 pages. Text remained selectable, all three education records appeared, and no text extended outside the page. The owner's current section order and published content were preserved.
+- Authenticated failure paths were checked with isolated test clients, without requesting another recovery email or changing production portfolio data. Live password reset remains owner-reported from the earlier launch checks.
+
 Checked on 11 October 2026 against the local Next.js application and the configured hosted Supabase project. The website has not been deployed.
 
 ## Verified
