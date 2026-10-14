@@ -1766,6 +1766,16 @@ h2 {
   grid-template-columns: 1fr 1fr;
   gap: 40px;
 }
+.recruiter-contact-socials {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+.recruiter-contact-socials a {
+  min-height: 44px;
+}
 .recruiter-contact > a {
   display: block;
   text-decoration: underline;

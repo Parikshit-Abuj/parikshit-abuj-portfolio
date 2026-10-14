@@ -265,7 +265,7 @@ export function PortfolioView({
           className="container recruiter-section recruiter-contact"
           id="contact"
         >
-          <h2>Get in touch</h2>
+          <h2>Contact me</h2>
           <p>
             Interested in discussing a role or project? I’d be happy to hear
             from you.
@@ -273,6 +273,13 @@ export function PortfolioView({
           <a href={`mailto:${p.email}`}>{p.email}</a>
           {p.phone && (
             <a href={`tel:${p.phone.replace(/[^+\d]/g, "")}`}>{p.phone}</a>
+          )}
+          {(p.github || p.linkedin) && (
+            <div className="recruiter-contact-socials">
+              {p.github && <External href={p.github}>GitHub</External>}
+              {p.github && p.linkedin && <span aria-hidden="true">·</span>}
+              {p.linkedin && <External href={p.linkedin}>LinkedIn</External>}
+            </div>
           )}
         </section>
       </main>
